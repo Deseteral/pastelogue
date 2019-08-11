@@ -5,7 +5,7 @@ use crate::extract_metadata::PhotoMetadata;
 #[derive(PartialEq, Debug)]
 pub enum CheckStatus {
     Correct,
-    Wrong,
+    Wrong(PathBuf),
 }
 
 fn generate_desired_filename(metadata: &PhotoMetadata, extension: &str) -> String {
@@ -34,12 +34,13 @@ pub fn check_file(file_path: &Path, metadata: PhotoMetadata, root_path: &Path) -
 
     let desired_filename = generate_desired_filename(&metadata, &extenstion);
     let desired_directory_path = generate_desired_directory_path(&metadata);
-    let full_desired_path = desired_directory_path.join(desired_filename);
+    let relative_desired_path = desired_directory_path.join(desired_filename);
 
-    if full_desired_path == relative_path {
+    if relative_desired_path == relative_path {
         CheckStatus::Correct
     } else {
-        CheckStatus::Wrong
+        let full_desired_path = root_path.join(relative_desired_path);
+        CheckStatus::Wrong(full_desired_path)
     }
 }
 
@@ -96,7 +97,12 @@ mod tests {
         let status = check_file(file_path, metadata, root_path);
 
         // then
-        assert_eq!(status, CheckStatus::Wrong);
+        match status {
+            CheckStatus::Wrong(correct_path) => {
+                assert_eq!(correct_path, PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg"))
+            },
+            _ => panic!("Wrong status type"),
+        };
     }
 
     #[test]
@@ -110,7 +116,12 @@ mod tests {
         let status = check_file(file_path, metadata, root_path);
 
         // then
-        assert_eq!(status, CheckStatus::Wrong);
+        match status {
+            CheckStatus::Wrong(correct_path) => {
+                assert_eq!(correct_path, PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg"))
+            },
+            _ => panic!("Wrong status type"),
+        };
     }
 
     #[test]
@@ -124,6 +135,11 @@ mod tests {
         let status = check_file(file_path, metadata, root_path);
 
         // then
-        assert_eq!(status, CheckStatus::Wrong);
+        match status {
+            CheckStatus::Wrong(correct_path) => {
+                assert_eq!(correct_path, PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg"))
+            },
+            _ => panic!("Wrong status type"),
+        };
     }
 }

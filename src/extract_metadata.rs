@@ -1,13 +1,15 @@
+use std::path::Path;
 use std::io::BufReader;
 use std::fs::File;
 use exif::{DateTime, Reader, Value, Tag};
 
+#[derive(Debug)]
 pub struct PhotoMetadata {
     pub datetime: DateTime,
 }
 
 impl PhotoMetadata {
-    pub fn from_file(file_path: &str) -> PhotoMetadata {
+    pub fn from_file(file_path: &Path) -> PhotoMetadata {
         let file = File::open(file_path).unwrap();
         let reader = Reader::new(&mut BufReader::new(&file)).unwrap();
 
@@ -34,10 +36,9 @@ mod tests {
             .join("resources")
             .join("test")
             .join("IMG_20190804_152120.jpg");
-        let path_str = path.to_str().unwrap();
 
         // when
-        let metadata = PhotoMetadata::from_file(path_str);
+        let metadata = PhotoMetadata::from_file(&path);
 
         // then
         assert_eq!(metadata.datetime.year, 2019);

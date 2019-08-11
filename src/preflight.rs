@@ -1,6 +1,9 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use walkdir::{WalkDir, DirEntry};
+use crate::check_file;
+use crate::extract_metadata;
 
+#[derive(Debug)]
 pub struct PreflightElement {
     current_path: PathBuf,
     correct_path: PathBuf,
@@ -16,11 +19,11 @@ fn file_is_hidden(entry: &DirEntry) -> bool {
 fn file_is_photo(entry: &DirEntry) -> bool {
     entry.file_name()
         .to_str()
-        .map(|s| s.ends_with(".jpg"))
+        .map(|s| s.ends_with(".jpg")) // TODO: Add more file types
         .unwrap_or(false)
 }
 
-pub fn run_preflight(root_path: &str) -> Vec<PreflightElement> {
+pub fn run_preflight(root_path: &Path) -> Vec<PreflightElement> {
     let mut list: Vec<PreflightElement> = Vec::new();
 
     let acceptable_files = WalkDir::new(root_path)
@@ -30,7 +33,19 @@ pub fn run_preflight(root_path: &str) -> Vec<PreflightElement> {
         .filter(|e| file_is_photo(e));
 
     for entry in acceptable_files {
-        println!("{}", entry.path().display());
+        let entry_path: &Path = entry.path();
+
+        println!("Checking file: {}", entry_path.display());
+
+        let metadata = extract_metadata::PhotoMetadata::from_file(&entry_path);
+        let status = check_file::check_file(&entry_path, metadata, &root_path);
+
+        if let check_file::CheckStatus::Wrong(correct_path) = status {
+            list.push(PreflightElement {
+                current_path: entry_path.to_path_buf(),
+                correct_path,
+            });
+        }
     }
 
     list
