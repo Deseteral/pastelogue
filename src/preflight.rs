@@ -5,8 +5,8 @@ use crate::extract_metadata;
 
 #[derive(Debug)]
 pub struct PreflightElement {
-    current_path: PathBuf,
-    correct_path: PathBuf,
+    pub current_path: PathBuf,
+    pub correct_path: PathBuf,
 }
 
 fn file_is_hidden(entry: &DirEntry) -> bool {
