@@ -1,5 +1,4 @@
 use std::path::{Path, PathBuf};
-use exif::DateTime;
 use crate::extract_metadata::PhotoMetadata;
 
 #[derive(PartialEq, Debug)]
@@ -47,6 +46,7 @@ pub fn check_file(file_path: &Path, metadata: PhotoMetadata, root_path: &Path) -
 #[cfg(test)]
 mod tests {
     use super::*;
+    use exif::DateTime;
 
     #[test]
     fn it_should_generate_desired_filename() {
