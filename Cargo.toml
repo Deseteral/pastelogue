@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 kamadak-exif = "0.3"
+walkdir = "2"

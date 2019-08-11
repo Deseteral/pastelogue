@@ -36,7 +36,7 @@ pub fn check_file(file_path: &Path, metadata: PhotoMetadata, root_path: &Path) -
     let desired_directory_path = generate_desired_directory_path(&metadata);
     let full_desired_path = desired_directory_path.join(desired_filename);
 
-    if relative_path == full_desired_path {
+    if full_desired_path == relative_path {
         CheckStatus::Correct
     } else {
         CheckStatus::Wrong
