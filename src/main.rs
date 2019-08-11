@@ -11,5 +11,10 @@ fn main() {
     let path = PathBuf::from(&args[1]);
 
     let list = preflight::run_preflight(&path);
-    processing::run_processing(list);
+
+    println!("Preflight completed with {} files to process", list.len());
+
+    if !list.is_empty() {
+        processing::run_processing(list);
+    }
 }

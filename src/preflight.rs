@@ -12,7 +12,7 @@ pub struct PreflightElement {
 fn file_is_hidden(entry: &DirEntry) -> bool {
     entry.file_name()
         .to_str()
-        .map(|s| s.starts_with("."))
+        .map(|s| s.starts_with('.'))
         .unwrap_or(false)
 }
 
@@ -34,8 +34,6 @@ pub fn run_preflight(root_path: &Path) -> Vec<PreflightElement> {
 
     for entry in acceptable_files {
         let entry_path: &Path = entry.path();
-
-        println!("Checking file: {}", entry_path.display());
 
         let metadata = extract_metadata::PhotoMetadata::from_file(&entry_path);
         let status = check_file::check_file(&entry_path, metadata, &root_path);
