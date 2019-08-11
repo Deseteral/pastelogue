@@ -16,7 +16,7 @@ fn generate_desired_filename(metadata: &PhotoMetadata, extension: &str) -> Strin
         metadata.datetime.hour,
         metadata.datetime.minute,
         metadata.datetime.second,
-        extension,
+        extension.to_lowercase(),
     )
 }
 
@@ -54,7 +54,7 @@ mod tests {
         let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
 
         // when
-        let filename = generate_desired_filename(&metadata, "test_photo_ext");
+        let filename = generate_desired_filename(&metadata, "TEST_PHOTO_EXT");
 
         // then
         assert_eq!(filename, "2019-08-10_18-17-28.test_photo_ext");

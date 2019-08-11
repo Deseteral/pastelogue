@@ -19,7 +19,7 @@ fn file_is_hidden(entry: &DirEntry) -> bool {
 fn file_is_photo(entry: &DirEntry) -> bool {
     entry.file_name()
         .to_str()
-        .map(|s| s.ends_with(".jpg")) // TODO: Add more file types
+        .map(|s| s.to_lowercase().ends_with(".jpg") || s.to_lowercase().ends_with(".jpeg")) // TODO: Add more file types
         .unwrap_or(false)
 }
 
