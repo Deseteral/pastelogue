@@ -1,9 +1,6 @@
-use exif::{DateTime};
 use std::path::{Path, PathBuf};
-
-pub struct PhotoMetadata {
-    datetime: DateTime,
-}
+use exif::DateTime;
+use crate::extract_metadata::PhotoMetadata;
 
 #[derive(PartialEq, Debug)]
 pub enum CheckStatus {
