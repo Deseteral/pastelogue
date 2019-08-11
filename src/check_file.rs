@@ -8,7 +8,7 @@ pub enum CheckStatus {
     Wrong,
 }
 
-fn generate_desired_filename(metadata: &PhotoMetadata) -> String {
+fn generate_desired_filename(metadata: &PhotoMetadata, extension: &str) -> String {
     format!(
         "{:04}-{:0>2}-{:0>2}_{:0>2}-{:0>2}-{:0>2}.{}",
         metadata.datetime.year,
@@ -17,7 +17,7 @@ fn generate_desired_filename(metadata: &PhotoMetadata) -> String {
         metadata.datetime.hour,
         metadata.datetime.minute,
         metadata.datetime.second,
-        "jpg",
+        extension,
     )
 }
 
@@ -30,7 +30,9 @@ fn generate_desired_directory_path(metadata: &PhotoMetadata) -> PathBuf {
 
 pub fn check_file(file_path: &Path, metadata: PhotoMetadata, root_path: &Path) -> CheckStatus {
     let relative_path = file_path.strip_prefix(root_path).unwrap();
-    let desired_filename = generate_desired_filename(&metadata);
+    let extenstion = file_path.extension().unwrap().to_str().unwrap();
+
+    let desired_filename = generate_desired_filename(&metadata, &extenstion);
     let desired_directory_path = generate_desired_directory_path(&metadata);
     let full_desired_path = desired_directory_path.join(desired_filename);
 
@@ -51,10 +53,10 @@ mod tests {
         let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
 
         // when
-        let filename = generate_desired_filename(&metadata);
+        let filename = generate_desired_filename(&metadata, "test_photo_ext");
 
         // then
-        assert_eq!(filename, "2019-08-10_18-17-28.jpg");
+        assert_eq!(filename, "2019-08-10_18-17-28.test_photo_ext");
     }
 
     #[test]
