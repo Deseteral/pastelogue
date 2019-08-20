@@ -1,20 +1,15 @@
 use std::env;
 use std::path::PathBuf;
 
-mod extract_metadata;
-mod check_file;
-mod preflight;
+mod scan_dir;
 mod processing;
+mod check_file;
+mod fs_operations;
+mod extract_metadata;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let path = PathBuf::from(&args[1]);
+    let root_path = PathBuf::from(&args[1]);
 
-    let list = preflight::run_preflight(&path);
-
-    println!("Preflight completed with {} files to process", list.len());
-
-    if !list.is_empty() {
-        processing::run_processing(list);
-    }
+    processing::process_dir(&root_path);
 }

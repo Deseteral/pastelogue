@@ -1,32 +1,26 @@
-use std::fs;
-use std::path::PathBuf;
-use crate::preflight::PreflightElement;
+use std::path::Path;
+use crate::extract_metadata::PhotoMetadata;
+use crate::check_file::{check_file, CheckStatus};
+use crate::scan_dir::scan_dir;
+use crate::fs_operations::{create_dirs, move_file};
 
-fn create_dirs(path: &PathBuf) {
-    let directory_path = path.parent().unwrap();
-    match fs::create_dir_all(&directory_path) {
-        Ok(_) => {},
-        Err(_) => panic!("Failed to create directory path: {}", &directory_path.display()),
-    };
-}
+pub fn process_dir(root_path: &Path) {
+    let files = scan_dir(&root_path);
+    println!("Scanning completed with {} files to process", files.len());
 
-fn move_file(old_path: &PathBuf, new_path: &PathBuf) {
-    match fs::copy(old_path, new_path) {
-        Ok(_) => {},
-        Err(_) => panic!("Could not copy file: {}", &old_path.display()),
-    };
-
-    match fs::remove_file(old_path) {
-        Ok(_) => {},
-        Err(_) => panic!("Could not remove file: {}", &old_path.display()),
+    for file_path in files {
+        process_file(&file_path, &root_path);
     }
 }
 
-pub fn run_processing(list: Vec<PreflightElement>) {
-    for element in list {
-        create_dirs(&element.correct_path);
-        move_file(&element.current_path, &element.correct_path);
+fn process_file(file_path: &Path, root_path: &Path) {
+    let metadata = PhotoMetadata::from_file(&file_path);
+    let status = check_file(&file_path, metadata, &root_path);
 
-        println!("Correctly processed file: {}", &element.current_path.display());
+    if let CheckStatus::Wrong(correct_path) = status {
+        create_dirs(&correct_path);
+        move_file(&file_path.to_path_buf(), &correct_path);
+
+        println!("Correctly processed file: {}", &file_path.display());
     }
 }

@@ -7,6 +7,22 @@ pub enum CheckStatus {
     Wrong(PathBuf),
 }
 
+pub fn check_file(file_path: &Path, metadata: PhotoMetadata, root_path: &Path) -> CheckStatus {
+    let relative_path = file_path.strip_prefix(root_path).unwrap();
+    let extenstion = file_path.extension().unwrap().to_str().unwrap();
+
+    let desired_filename = generate_desired_filename(&metadata, &extenstion);
+    let desired_directory_path = generate_desired_directory_path(&metadata);
+    let relative_desired_path = desired_directory_path.join(desired_filename);
+
+    if relative_desired_path == relative_path {
+        CheckStatus::Correct
+    } else {
+        let full_desired_path = root_path.join(relative_desired_path);
+        CheckStatus::Wrong(full_desired_path)
+    }
+}
+
 fn generate_desired_filename(metadata: &PhotoMetadata, extension: &str) -> String {
     format!(
         "{:04}-{:0>2}-{:0>2}_{:0>2}-{:0>2}-{:0>2}.{}",
@@ -25,22 +41,6 @@ fn generate_desired_directory_path(metadata: &PhotoMetadata) -> PathBuf {
         .join(format!("{:04}", metadata.datetime.year))
         .join(format!("{:0>2}", metadata.datetime.month))
         .join(format!("{:0>2}", metadata.datetime.day))
-}
-
-pub fn check_file(file_path: &Path, metadata: PhotoMetadata, root_path: &Path) -> CheckStatus {
-    let relative_path = file_path.strip_prefix(root_path).unwrap();
-    let extenstion = file_path.extension().unwrap().to_str().unwrap();
-
-    let desired_filename = generate_desired_filename(&metadata, &extenstion);
-    let desired_directory_path = generate_desired_directory_path(&metadata);
-    let relative_desired_path = desired_directory_path.join(desired_filename);
-
-    if relative_desired_path == relative_path {
-        CheckStatus::Correct
-    } else {
-        let full_desired_path = root_path.join(relative_desired_path);
-        CheckStatus::Wrong(full_desired_path)
-    }
 }
 
 #[cfg(test)]
