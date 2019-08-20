@@ -1,5 +1,5 @@
-use std::path::{Path, PathBuf};
 use crate::extract_metadata::PhotoMetadata;
+use std::path::{Path, PathBuf};
 
 #[derive(PartialEq, Debug)]
 pub enum CheckStatus {
@@ -51,7 +51,9 @@ mod tests {
     #[test]
     fn it_should_generate_desired_filename() {
         // given
-        let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
+        let metadata = PhotoMetadata {
+            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+        };
 
         // when
         let filename = generate_desired_filename(&metadata, "TEST_PHOTO_EXT");
@@ -63,13 +65,18 @@ mod tests {
     #[test]
     fn it_should_generate_desired_directory_path() {
         // given
-        let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
+        let metadata = PhotoMetadata {
+            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+        };
 
         // when
         let directory_path = generate_desired_directory_path(&metadata);
 
         // then
-        assert_eq!(directory_path, Path::new("").join("2019").join("08").join("10"));
+        assert_eq!(
+            directory_path,
+            Path::new("").join("2019").join("08").join("10")
+        );
     }
 
     #[test]
@@ -77,7 +84,9 @@ mod tests {
         // given
         let file_path = Path::new("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg");
         let root_path = Path::new("/device/user/Photos");
-        let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
+        let metadata = PhotoMetadata {
+            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+        };
 
         // when
         let status = check_file(file_path, metadata, root_path);
@@ -91,16 +100,19 @@ mod tests {
         // given
         let file_path = Path::new("/device/user/Photos/some_folder/myphoto.jpg");
         let root_path = Path::new("/device/user/Photos");
-        let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
+        let metadata = PhotoMetadata {
+            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+        };
 
         // when
         let status = check_file(file_path, metadata, root_path);
 
         // then
         match status {
-            CheckStatus::Wrong(correct_path) => {
-                assert_eq!(correct_path, PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg"))
-            },
+            CheckStatus::Wrong(correct_path) => assert_eq!(
+                correct_path,
+                PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg")
+            ),
             _ => panic!("Wrong status type"),
         };
     }
@@ -110,16 +122,19 @@ mod tests {
         // given
         let file_path = Path::new("/device/user/Photos/2019/08/10/myphoto.jpg");
         let root_path = Path::new("/device/user/Photos");
-        let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
+        let metadata = PhotoMetadata {
+            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+        };
 
         // when
         let status = check_file(file_path, metadata, root_path);
 
         // then
         match status {
-            CheckStatus::Wrong(correct_path) => {
-                assert_eq!(correct_path, PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg"))
-            },
+            CheckStatus::Wrong(correct_path) => assert_eq!(
+                correct_path,
+                PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg")
+            ),
             _ => panic!("Wrong status type"),
         };
     }
@@ -129,16 +144,19 @@ mod tests {
         // given
         let file_path = Path::new("/device/user/Photos/some_folder/2019-08-10_18-17-28.jpg");
         let root_path = Path::new("/device/user/Photos");
-        let metadata = PhotoMetadata { datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap() };
+        let metadata = PhotoMetadata {
+            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+        };
 
         // when
         let status = check_file(file_path, metadata, root_path);
 
         // then
         match status {
-            CheckStatus::Wrong(correct_path) => {
-                assert_eq!(correct_path, PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg"))
-            },
+            CheckStatus::Wrong(correct_path) => assert_eq!(
+                correct_path,
+                PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg")
+            ),
             _ => panic!("Wrong status type"),
         };
     }

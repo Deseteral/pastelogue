@@ -1,11 +1,11 @@
 use std::env;
 use std::path::PathBuf;
 
-mod scan_dir;
-mod processing;
 mod check_file;
-mod fs_operations;
 mod extract_metadata;
+mod fs_operations;
+mod processing;
+mod scan_dir;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

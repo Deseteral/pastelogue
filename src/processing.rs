@@ -1,8 +1,8 @@
-use std::path::Path;
-use crate::extract_metadata::PhotoMetadata;
 use crate::check_file::{check_file, CheckStatus};
-use crate::scan_dir::scan_dir;
+use crate::extract_metadata::PhotoMetadata;
 use crate::fs_operations::{create_dirs, move_file};
+use crate::scan_dir::scan_dir;
+use std::path::Path;
 
 pub fn process_dir(root_path: &Path) {
     let files = scan_dir(&root_path);

@@ -1,7 +1,7 @@
-use std::path::Path;
-use std::io::BufReader;
+use exif::{DateTime, Reader, Tag, Value};
 use std::fs::File;
-use exif::{DateTime, Reader, Value, Tag};
+use std::io::BufReader;
+use std::path::Path;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
