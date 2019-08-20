@@ -1,7 +1,7 @@
 use std::fs;
-use std::path::PathBuf;
+use std::path::Path;
 
-pub fn create_dirs(path: &PathBuf) {
+pub fn create_dirs(path: &Path) {
     let directory_path = path.parent().unwrap();
     match fs::create_dir_all(&directory_path) {
         Ok(_) => {},
@@ -9,7 +9,7 @@ pub fn create_dirs(path: &PathBuf) {
     };
 }
 
-pub fn move_file(old_path: &PathBuf, new_path: &PathBuf) {
+pub fn move_file(old_path: &Path, new_path: &Path) {
     match fs::copy(old_path, new_path) {
         Ok(_) => {},
         Err(_) => panic!("Could not copy file: {}", &old_path.display()),
