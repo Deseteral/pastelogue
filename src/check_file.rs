@@ -7,7 +7,7 @@ pub enum CheckStatus {
     Wrong(PathBuf),
 }
 
-pub fn check_file(file_path: &Path, metadata: PhotoMetadata, root_path: &Path) -> CheckStatus {
+pub fn check_file(file_path: &Path, metadata: &PhotoMetadata, root_path: &Path) -> CheckStatus {
     let relative_path = file_path.strip_prefix(root_path).unwrap();
     let extenstion = file_path.extension().unwrap().to_str().unwrap();
 
@@ -89,7 +89,7 @@ mod tests {
         };
 
         // when
-        let status = check_file(file_path, metadata, root_path);
+        let status = check_file(&file_path, &metadata, &root_path);
 
         // then
         assert_eq!(status, CheckStatus::Correct);
@@ -105,7 +105,7 @@ mod tests {
         };
 
         // when
-        let status = check_file(file_path, metadata, root_path);
+        let status = check_file(&file_path, &metadata, &root_path);
 
         // then
         match status {
@@ -127,7 +127,7 @@ mod tests {
         };
 
         // when
-        let status = check_file(file_path, metadata, root_path);
+        let status = check_file(&file_path, &metadata, &root_path);
 
         // then
         match status {
@@ -149,7 +149,7 @@ mod tests {
         };
 
         // when
-        let status = check_file(file_path, metadata, root_path);
+        let status = check_file(&file_path, &metadata, &root_path);
 
         // then
         match status {

@@ -15,7 +15,7 @@ pub fn process_dir(root_path: &Path) {
 
 fn process_file(file_path: &Path, root_path: &Path) {
     let metadata = PhotoMetadata::from_file(&file_path);
-    let status = check_file(&file_path, metadata, &root_path);
+    let status = check_file(&file_path, &metadata, &root_path);
 
     if let CheckStatus::Wrong(correct_path) = status {
         create_dirs(&correct_path);
