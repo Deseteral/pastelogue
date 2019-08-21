@@ -1,10 +1,10 @@
 use exif::{DateTime, Reader, Tag, Value};
+use std::convert::From;
+use std::error;
+use std::fmt;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
-use std::error;
-use std::fmt;
-use std::convert::From;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
@@ -26,7 +26,7 @@ impl PhotoMetadata {
             Some(field) => match field.value {
                 Value::Ascii(ref vec) if !vec.is_empty() => DateTime::from_ascii(vec[0]).ok(),
                 _ => None,
-            }
+            },
             None => None,
         };
 
