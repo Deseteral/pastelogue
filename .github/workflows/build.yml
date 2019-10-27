@@ -6,7 +6,8 @@ jobs:
   Build:
     strategy:
       matrix:
-        os: [macOS-10.14, ubuntu-latest, windows-latest]
+        # os: [macOS-10.14, ubuntu-latest, windows-latest]
+        os: [windows-latest]
         rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
@@ -29,6 +30,15 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt install libgexiv2-dev
 
+    # Windows setup
+    - name: '[Windows] Clone gexiv2'
+      if: matrix.os == 'windows-latest'
+      run: git clone https://gitlab.gnome.org/GNOME/gexiv2
+    - name: '[Windows] Build gexiv2'
+      if: matrix.os == 'windows-latest'
+      run: cd gexiv2 && meson build && ninja -C build && sudo ninja -C build install
+
+    # Build and test
     - uses: actions/checkout@v1
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
