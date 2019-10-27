@@ -37,7 +37,10 @@ jobs:
       run: pip install meson
     - name: '[Windows] Install ninja'
       if: matrix.os == 'windows-latest'
-      run: mkdir ninja-build ; (new-object net.webclient).DownloadFile('https://github.com/mesonbuild/cidata/raw/master/ninja.exe', '.\ninja.exe')
+      run: (new-object net.webclient).DownloadFile('https://github.com/mesonbuild/cidata/raw/master/ninja.exe', '.\ninja.exe')
+    - name: '[Windows] Install pkg-config'
+      if: matrix.os == 'windows-latest'
+      run: choco install pkgconfiglite
     - name: '[Windows] Clone gexiv2'
       if: matrix.os == 'windows-latest'
       run: git clone https://gitlab.gnome.org/GNOME/gexiv2
