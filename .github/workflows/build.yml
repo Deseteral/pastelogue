@@ -43,7 +43,7 @@ jobs:
       run: choco install pkgconfiglite
     - name: '[Windows] Install exiv2'
       if: matrix.os == 'windows-latest'
-      run: (new-object net.webclient).DownloadFile('https://www.exiv2.org/builds/exiv2-0.27.2-2017msvc64.zip', '.\exiv2.zip') ; mkdir .\exiv2 ; Expand-Archive .\exiv2.zip -DestinationPath .\exiv2 ; $env:path += ";."
+      run: (new-object net.webclient).DownloadFile('https://www.exiv2.org/builds/exiv2-0.27.2-2017msvc64.zip', '.\exiv2.zip') ; mkdir .\exiv2 ; Expand-Archive .\exiv2.zip -DestinationPath .\exiv2 ; $env:path += ";.\exiv2"
     - name: '[Windows] Clone gexiv2'
       if: matrix.os == 'windows-latest'
       run: git clone https://gitlab.gnome.org/GNOME/gexiv2
