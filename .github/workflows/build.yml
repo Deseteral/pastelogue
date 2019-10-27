@@ -43,7 +43,7 @@ jobs:
       run: git clone https://gitlab.gnome.org/GNOME/gexiv2
     - name: '[Windows] Build gexiv2'
       if: matrix.os == 'windows-latest'
-      run: cd gexiv2 ; meson build ; .\ninja.exe -C build ; .\ninja.exe -C build install
+      run: cd gexiv2 ; meson build ; & '..\ninja.exe' -C build ; & '..\ninja.exe' -C build install
 
     # Build and test
     - uses: actions/checkout@v1
