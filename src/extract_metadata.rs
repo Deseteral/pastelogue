@@ -1,10 +1,10 @@
-use exif::{DateTime, Reader, Tag, Value};
+use crate::date_time::DateTime;
 use std::convert::From;
 use std::error;
 use std::fmt;
 use std::fs::File;
-use std::io::BufReader;
 use std::path::Path;
+use rexiv2::Metadata;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
@@ -20,20 +20,15 @@ impl PhotoMetadata {
 
     fn from_exif(file_path: &Path) -> Result<PhotoMetadata> {
         let file = File::open(file_path)?;
-        let reader = Reader::new(&mut BufReader::new(&file))?;
 
-        let datetime = match reader.get_field(Tag::DateTime, false) {
-            Some(field) => match field.value {
-                Value::Ascii(ref vec) if !vec.is_empty() => DateTime::from_ascii(vec[0]).ok(),
-                _ => None,
-            },
-            None => None,
-        };
-
-        match datetime {
-            Some(datetime) => Ok(PhotoMetadata { datetime }),
-            None => Err(MetadataExtractorError {}),
+        if let Ok(meta) = Metadata::new_from_path(file_path.to_str().unwrap()) {
+            if let Ok(datetime_ascii) = meta.get_tag_string("Exif.Image.DateTime") {
+                let datetime = DateTime::from_ascii(datetime_ascii.as_bytes()).unwrap();
+                return Ok(PhotoMetadata { datetime })
+            }
         }
+
+        Err(MetadataExtractorError {})
     }
 }
 

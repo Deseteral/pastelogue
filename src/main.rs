@@ -1,6 +1,7 @@
 use std::env;
 use std::path::PathBuf;
 
+mod date_time;
 mod check_file;
 mod extract_metadata;
 mod fs_operations;

@@ -46,7 +46,7 @@ fn generate_desired_directory_path(metadata: &PhotoMetadata) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use exif::DateTime;
+    use crate::date_time::DateTime;
 
     #[test]
     fn it_should_generate_desired_filename() {
