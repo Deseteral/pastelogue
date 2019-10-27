@@ -3,13 +3,14 @@ name: Build
 on: [push]
 
 jobs:
-  build:    
+  MacOS:
     strategy:
       matrix:
-        os: [macOS-10.14, windows-2019, ubuntu-latest]
         rust: [stable, nightly]
-    runs-on: ${{ matrix.os }}
+    runs-on: macOS-10.14
     steps:
+    - name: Install gexiv2 from brew
+      run: brew update && brew install gexiv2
     - uses: actions/checkout@v1
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
