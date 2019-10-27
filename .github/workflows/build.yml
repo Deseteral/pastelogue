@@ -32,12 +32,15 @@ jobs:
       run: sudo apt install libgexiv2-dev
 
     # Windows setup
-    - name: '[Windows] Clone gexiv2'
-      if: matrix.os == 'windows-latest'
-      run: git clone https://gitlab.gnome.org/GNOME/gexiv2
     - name: '[Windows] Install meson'
       if: matrix.os == 'windows-latest'
       run: pip install meson
+    - name: '[Windows] Install ninja'
+      if: matrix.os == 'windows-latest'
+      run: mkdir ninja-build ; (new-object net.webclient).DownloadFile('https://github.com/mesonbuild/cidata/raw/master/ninja.exe', '.\ninja-build\ninja.exe')
+    - name: '[Windows] Clone gexiv2'
+      if: matrix.os == 'windows-latest'
+      run: git clone https://gitlab.gnome.org/GNOME/gexiv2
     - name: '[Windows] Build gexiv2'
       if: matrix.os == 'windows-latest'
       run: cd gexiv2 ; meson build ; ninja -C build ; sudo ninja -C build install
