@@ -2,7 +2,6 @@ use crate::date_time::DateTime;
 use std::convert::From;
 use std::error;
 use std::fmt;
-use std::fs::File;
 use std::path::Path;
 use rexiv2::Metadata;
 
@@ -19,8 +18,6 @@ impl PhotoMetadata {
     }
 
     fn from_exif(file_path: &Path) -> Result<PhotoMetadata> {
-        let file = File::open(file_path)?;
-
         if let Ok(meta) = Metadata::new_from_path(file_path.to_str().unwrap()) {
             if let Ok(datetime_ascii) = meta.get_tag_string("Exif.Image.DateTime") {
                 let datetime = DateTime::from_ascii(datetime_ascii.as_bytes()).unwrap();
