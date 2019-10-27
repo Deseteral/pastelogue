@@ -3,7 +3,7 @@ name: Build
 on: [push]
 
 jobs:
-  MacOS:
+  Build:
     strategy:
       matrix:
         os: [macOS-10.14, ubuntu-latest]
@@ -24,7 +24,7 @@ jobs:
     # Linux setup
     - name: Install gexiv2 from apt
       if: matrix.os == 'ubuntu-latest'
-      run: apt install libgexiv2-dev
+      run: sudo apt install libgexiv2-dev
 
     - uses: actions/checkout@v1
     - name: Install Rust toolchain
