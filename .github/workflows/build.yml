@@ -6,15 +6,21 @@ jobs:
   MacOS:
     strategy:
       matrix:
+        os: [macOS-10.14]
         rust: [stable, nightly]
-    runs-on: macOS-10.14
+    runs-on: ${{ matrix.os }}
     steps:
+    # MacOS setup
     - name: Update homebrew
+      if: matrix.os == 'macOS-10.14'
       run: brew update
     - name: Install pkg-config from brew
+      if: matrix.os == 'macOS-10.14'
       run: brew install pkg-config && export PKG_CONFIG_PATH="/usr/local/opt/libffi/lib/pkgconfig"
     - name: Install gexiv2 from brew
+      if: matrix.os == 'macOS-10.14'
       run: brew install gexiv2
+
     - uses: actions/checkout@v1
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
