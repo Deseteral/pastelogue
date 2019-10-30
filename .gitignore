@@ -1,4 +1,6 @@
 /target
 **/*.rs.bk
 
+build/exiv2
+
 .DS_Store
