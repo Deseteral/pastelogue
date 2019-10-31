@@ -7,49 +7,18 @@ jobs:
     strategy:
       matrix:
         # os: [macOS-10.14, ubuntu-latest, windows-latest]
-        os: [windows-latest]
+        os: [macOS-10.14, ubuntu-latest]
         rust: [stable]
         # rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
-    # MacOS setup
-    - name: '[MacOS] Update homebrew'
+    - name: '[MacOS] Setup exiv2'
       if: matrix.os == 'macOS-10.14'
-      run: brew update
-    - name: '[MacOS] Install pkg-config from brew'
-      if: matrix.os == 'macOS-10.14'
-      run: brew install pkg-config && export PKG_CONFIG_PATH="/usr/local/opt/libffi/lib/pkgconfig"
-    - name: '[MacOS] Install gexiv2 from brew'
-      if: matrix.os == 'macOS-10.14'
-      run: brew install gexiv2
+      run: ./build/unix.sh
 
-    # Linux setup
-    - name: '[Linux] Update apt'
+    - name: '[MacOS] Setup exiv2'
       if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get update
-    - name: '[Linux] Install gexiv2 from apt'
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt install libgexiv2-dev
-
-    # Windows setup
-    - name: '[Windows] Install meson'
-      if: matrix.os == 'windows-latest'
-      run: pip install meson
-    - name: '[Windows] Install ninja'
-      if: matrix.os == 'windows-latest'
-      run: (new-object net.webclient).DownloadFile('https://github.com/mesonbuild/cidata/raw/master/ninja.exe', '.\ninja.exe')
-    - name: '[Windows] Install pkg-config'
-      if: matrix.os == 'windows-latest'
-      run: choco install pkgconfiglite
-    - name: '[Windows] Install exiv2'
-      if: matrix.os == 'windows-latest'
-      run: (new-object net.webclient).DownloadFile('https://www.exiv2.org/builds/exiv2-0.27.2-2017msvc64.zip', '.\exiv2.zip') ; mkdir .\exiv2 ; Expand-Archive .\exiv2.zip -DestinationPath .\exiv2 ; $env:path += ";$(pwd)\exiv2\exiv2-0.27.2-2017msvc64" ; $env:path += ";$(pwd)\exiv2\exiv2-0.27.2-2017msvc64\lib" ; $env:path += ";$(pwd)\exiv2\exiv2-0.27.2-2017msvc64\lib\pkgconfig" ; $env:path += ";$(pwd)\exiv2\exiv2-0.27.2-2017msvc64\lib\cmake" ; $env:path += ";$(pwd)\exiv2\exiv2-0.27.2-2017msvc64\bin" ; $env:path += ";$(pwd)\exiv2\exiv2-0.27.2-2017msvc64\include"
-    - name: '[Windows] Clone gexiv2'
-      if: matrix.os == 'windows-latest'
-      run: git clone https://gitlab.gnome.org/GNOME/gexiv2
-    - name: '[Windows] Build gexiv2'
-      if: matrix.os == 'windows-latest'
-      run: cd gexiv2 ; meson build ; & '..\ninja.exe' -C build ; & '..\ninja.exe' -C build install
+      run: ./build/unix.sh
 
     # Build and test
     - uses: actions/checkout@v1
