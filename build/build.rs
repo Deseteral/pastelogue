@@ -6,7 +6,7 @@ fn main() {
     let env_profile = env::var("PROFILE").unwrap();
     let env_cargo_manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
 
-    let out_dir = Path::new(&cargo_manifest_dir)
+    let out_dir = Path::new(&env_cargo_manifest_dir)
         .join("target")
         .join(&env_profile);
     let exiv2_exec = Path::new(&env_cargo_manifest_dir)
