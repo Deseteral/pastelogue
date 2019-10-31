@@ -7,6 +7,7 @@ mod extract_metadata;
 mod fs_operations;
 mod processing;
 mod scan_dir;
+mod exiv2;
 
 fn main() {
     let args: Vec<String> = env::args().collect();

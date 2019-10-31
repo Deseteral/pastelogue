@@ -1,58 +1,22 @@
 use crate::date_time::DateTime;
-use std::convert::From;
-use std::error;
-use std::fmt;
 use std::path::Path;
-use rexiv2::Metadata;
+use crate::exiv2;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
     pub datetime: DateTime,
 }
 
-type Result<T> = std::result::Result<T, MetadataExtractorError>;
-
 impl PhotoMetadata {
-    pub fn from_file(file_path: &Path) -> Result<PhotoMetadata> {
-        PhotoMetadata::from_exif(&file_path)
-    }
+    pub fn from_file(file_path: &Path) -> Result<PhotoMetadata, exiv2::ExifReadError> {
+        let metadata = exiv2::read_metadata_from_file(file_path)?;
+        let date_time_str = &metadata["Exif"]["Image"]["DateTime"]
+            .as_str()
+            .ok_or_else(|| exiv2::ExifReadError {})?;
 
-    fn from_exif(file_path: &Path) -> Result<PhotoMetadata> {
-        if let Ok(meta) = Metadata::new_from_path(file_path.to_str().unwrap()) {
-            if let Ok(datetime_ascii) = meta.get_tag_string("Exif.Image.DateTime") {
-                let datetime = DateTime::from_ascii(datetime_ascii.as_bytes()).unwrap();
-                return Ok(PhotoMetadata { datetime })
-            }
-        }
-
-        Err(MetadataExtractorError {})
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct MetadataExtractorError;
-
-impl fmt::Display for MetadataExtractorError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "could not extract metadata from file")
-    }
-}
-
-impl error::Error for MetadataExtractorError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None
-    }
-}
-
-impl From<std::io::Error> for MetadataExtractorError {
-    fn from(_error: std::io::Error) -> Self {
-        MetadataExtractorError {}
-    }
-}
-
-impl From<exif::Error> for MetadataExtractorError {
-    fn from(_error: exif::Error) -> Self {
-        MetadataExtractorError {}
+        Ok(PhotoMetadata {
+            datetime: DateTime::from_ascii(date_time_str.as_bytes()).unwrap(),
+        })
     }
 }
 
