@@ -12,16 +12,15 @@ jobs:
         # rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
+    - uses: actions/checkout@v1
     - name: '[MacOS] Setup exiv2'
       if: matrix.os == 'macOS-10.14'
-      run: cd build && pwd
+      run: ./build/unix.sh
 
     # - name: '[Linux] Setup exiv2'
     #   if: matrix.os == 'ubuntu-latest'
     #   run: ./build/unix.sh
 
-    # Build and test
-    - uses: actions/checkout@v1
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
       with:
