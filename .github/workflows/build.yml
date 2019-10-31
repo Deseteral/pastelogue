@@ -14,7 +14,7 @@ jobs:
     steps:
     - name: '[MacOS] Setup exiv2'
       if: matrix.os == 'macOS-10.14'
-      run: ls && ./build/unix.sh
+      run: ls -al
 
     # - name: '[Linux] Setup exiv2'
     #   if: matrix.os == 'ubuntu-latest'
