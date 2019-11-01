@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: '[MacOS] Setup exiv2'
       if: matrix.os == 'macOS-10.14'
-      run: ./build/unix.sh
+      run: ./build/unix.sh && brew install exiv2
 
     # - name: '[Linux] Setup exiv2'
     #   if: matrix.os == 'ubuntu-latest'
