@@ -9,10 +9,13 @@ use regex::Regex;
 
 pub fn read_metadata_from_file(file_path: &Path) -> Result<serde_json::Value, ExifReadError> {
     let exec_path = get_exiv2json_path();
+    dbg!(&exec_path);
     let exiv2json_output = Command::new(exec_path)
         .arg(file_path.to_str().unwrap())
         .output()
         .expect("failed to execute exiv2json process");
+
+    dbg!(&exiv2json_output);
 
     let output_str = String::from_utf8(exiv2json_output.stdout)?;
     let json = remove_control_characters(&output_str);
