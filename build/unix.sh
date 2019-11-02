@@ -22,5 +22,6 @@ tar xzf exiv2.tar.gz -C exiv2
 
 mv "exiv2/$EXIV2_BUILD_NAME/bin/exiv2json" exiv2/exiv2json
 mv "exiv2/$EXIV2_BUILD_NAME/lib/$EXIV2_LIB_NAME" "exiv2/$EXIV2_LIB_DIST_NAME"
+ls -al exiv2
 
 rm -rf "exiv2/$EXIV2_BUILD_NAME" exiv2.tar.gz
