@@ -11,7 +11,7 @@ if [ "$(uname)" == "Darwin" ]; then
 else
     EXIV2_BUILD_NAME="exiv2-0.27.2-Linux64"
     EXIV2_LIB_NAME="libexiv2.so.0.27.2"
-    EXIV2_LIB_DIST_NAME="libexiv2.so.0.27.2"
+    EXIV2_LIB_DIST_NAME="libexiv2.so.27"
 fi
 
 
