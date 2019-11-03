@@ -19,7 +19,7 @@ jobs:
 
     - name: '[Linux] Setup exiv2'
       if: matrix.os == 'ubuntu-latest'
-      run: apt-get install exiv2 && ./build/unix.sh
+      run: sudo apt-get install exiv2 && ./build/unix.sh
 
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
