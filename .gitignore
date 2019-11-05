@@ -1,7 +1,6 @@
 /target
 **/*.rs.bk
 
-build/exiv2
 release
 
 .DS_Store

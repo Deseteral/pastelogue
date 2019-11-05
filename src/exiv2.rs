@@ -25,7 +25,7 @@ pub fn read_metadata_from_file(file_path: &Path) -> Result<serde_json::Value, Ex
 
 fn get_exiv2json_path() -> PathBuf {
     let base_path = if let Ok(cargo_manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
-        PathBuf::from(cargo_manifest_dir).join("build").join("exiv2")
+        PathBuf::from(cargo_manifest_dir).join("release").join("exiv2")
     } else {
         env::current_exe().unwrap()
             .parent().unwrap()
