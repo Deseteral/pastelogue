@@ -13,3 +13,5 @@ mv "exiv2/$EXIV2_BUILD_NAME/bin/exiv2json" exiv2/exiv2json
 mv "exiv2/$EXIV2_BUILD_NAME/lib/$EXIV2_LIB_NAME" "exiv2/$EXIV2_LIB_DIST_NAME"
 
 rm -rf "exiv2/$EXIV2_BUILD_NAME" exiv2.tar.gz
+
+cd ..
