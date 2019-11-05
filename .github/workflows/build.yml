@@ -19,7 +19,7 @@ jobs:
 
     - name: '[Windows] Setup exiv2'
       if: matrix.os == 'windows-latest'
-      run: ./scripts/windows.ps1
+      run: .\scripts\windows.ps1
 
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
