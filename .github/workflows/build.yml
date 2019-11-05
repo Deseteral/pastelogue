@@ -14,11 +14,11 @@ jobs:
 
     - name: '[MacOS] Setup exiv2'
       if: matrix.os == 'macOS-10.14'
-      run: ./scripts/setup_exiv2_macos.sh
+      run: ./scripts/macos_setup_exiv2.sh
 
     - name: '[Windows] Setup exiv2'
       if: matrix.os == 'windows-latest'
-      run: .\scripts\setup_exiv2_windows.ps1
+      run: .\scripts\windows_setup_exiv2.ps1
 
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
