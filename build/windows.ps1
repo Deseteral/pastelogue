@@ -10,3 +10,5 @@ Copy-Item ".\exiv2\$EXIV2_BUILD_NAME\bin\exiv2.dll" -Destination "exiv2\exiv2.dl
 
 Remove-Item -LiteralPath ".\exiv2\$EXIV2_BUILD_NAME" -Force -Recurse
 Remove-Item -LiteralPath ".\exiv2.zip" -Force -Recurse
+
+Set-Location ..
