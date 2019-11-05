@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         # os: [macOS-10.14, ubuntu-latest, windows-latest]
-        os: [macOS-10.14]
+        os: [macOS-10.14, windows-latest]
         rust: [stable]
         # rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
@@ -17,6 +17,10 @@ jobs:
     - name: '[MacOS] Setup exiv2'
       if: matrix.os == 'macOS-10.14'
       run: ./build/macos.sh
+
+    - name: '[Windows] Setup exiv2'
+      if: matrix.os == 'windows-latest'
+      run: ./build/windows.ps1
 
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
