@@ -7,7 +7,8 @@ jobs:
     strategy:
       matrix:
         os: [macOS-10.14, windows-latest]
-        rust: [stable, nightly]
+        rust: [stable]
+        # rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
@@ -23,8 +24,8 @@ jobs:
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
       with:
-          toolchain: ${{ matrix.rust }}
-          override: true
+        toolchain: ${{ matrix.rust }}
+        override: true
     - name: Build
       run: cargo build --verbose
     - name: Run tests
