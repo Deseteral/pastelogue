@@ -3,7 +3,6 @@ name = "pastelogue"
 version = "0.1.0"
 authors = ["Deseteral <deseteral@gmail.com>"]
 edition = "2018"
-# build = "build/build.rs"
 
 [dependencies]
 kamadak-exif = "0.3"
