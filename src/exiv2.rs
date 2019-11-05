@@ -27,7 +27,9 @@ fn get_exiv2json_path() -> PathBuf {
     let base_path = if let Ok(cargo_manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
         PathBuf::from(cargo_manifest_dir).join("build").join("exiv2")
     } else {
-        PathBuf::from(".")
+        env::current_exe().unwrap()
+            .parent().unwrap()
+            .canonicalize().unwrap() // TODO: Simplify this
     };
 
     base_path.join("exiv2json")

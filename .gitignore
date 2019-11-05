@@ -2,5 +2,6 @@
 **/*.rs.bk
 
 build/exiv2
+dist
 
 .DS_Store
