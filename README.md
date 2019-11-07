@@ -14,7 +14,7 @@ or if you're on Windows
 ## Making release package
 For MacOS run
 ```shell
-./scripts/windows_make_release.sh
+./scripts/macos_make_release.sh
 ```
 or if you're on Windows
 ```powershell
