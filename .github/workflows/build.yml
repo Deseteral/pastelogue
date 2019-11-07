@@ -6,14 +6,14 @@ jobs:
   Build:
     strategy:
       matrix:
-        os: [macOS-10.14, windows-latest]
+        os: [macOS-latest, windows-latest]
         rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
 
     - name: '[MacOS] Setup exiv2'
-      if: matrix.os == 'macOS-10.14'
+      if: matrix.os == 'macOS-latest'
       run: ./scripts/macos_setup_exiv2.sh
 
     - name: '[Windows] Setup exiv2'
