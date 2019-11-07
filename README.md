@@ -2,7 +2,7 @@
 Automatically catalogue your photo collection.
 
 ## Dependencies
-To extract EXIF metadata from files pastelogue uses EXIV2 library. To setup this dependency run
+To extract Exif metadata from files pastelogue uses Exiv2 library. To setup this dependency run
 ```shell
 ./scripts/macos_setup_exiv2.sh
 ```
