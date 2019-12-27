@@ -21,5 +21,5 @@ pub fn move_file(old_path: &Path, new_path: &Path) {
     match fs::remove_file(old_path) {
         Ok(_) => {}
         Err(_) => panic!("Could not remove file: {}", &old_path.display()),
-    }
+    };
 }

@@ -3,19 +3,28 @@ name: Build
 on: [push]
 
 jobs:
-  build:    
+  Build:
     strategy:
       matrix:
-        os: [macOS-10.14, windows-2019, ubuntu-latest]
+        os: [macOS-latest, windows-latest]
         rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
+
+    - name: '[MacOS] Setup exiv2'
+      if: matrix.os == 'macOS-latest'
+      run: ./scripts/macos_setup_exiv2.sh
+
+    - name: '[Windows] Setup exiv2'
+      if: matrix.os == 'windows-latest'
+      run: .\scripts\windows_setup_exiv2.ps1
+
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
       with:
-          toolchain: ${{ matrix.rust }}
-          override: true
+        toolchain: ${{ matrix.rust }}
+        override: true
     - name: Build
       run: cargo build --verbose
     - name: Run tests

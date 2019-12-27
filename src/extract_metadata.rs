@@ -1,7 +1,6 @@
-use exif::{DateTime, Reader, Tag, Value};
-use std::fs::File;
-use std::io::BufReader;
+use crate::date_time::DateTime;
 use std::path::Path;
+use crate::exiv2;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
@@ -9,18 +8,15 @@ pub struct PhotoMetadata {
 }
 
 impl PhotoMetadata {
-    pub fn from_file(file_path: &Path) -> PhotoMetadata {
-        let file = File::open(file_path).unwrap();
-        let reader = Reader::new(&mut BufReader::new(&file)).unwrap();
+    pub fn from_file(file_path: &Path) -> Result<PhotoMetadata, exiv2::ExifReadError> {
+        let metadata = exiv2::read_metadata_from_file(file_path)?;
+        let date_time_str = &metadata["Exif"]["Image"]["DateTime"]
+            .as_str()
+            .ok_or_else(|| exiv2::ExifReadError {})?;
 
-        let field = reader.get_field(Tag::DateTime, false).unwrap();
-        let data = match field.value {
-            Value::Ascii(ref vec) if !vec.is_empty() => vec[0],
-            _ => panic!(), // TODO: This should not panic, add error handling
-        };
-        let datetime = DateTime::from_ascii(data).unwrap();
-
-        PhotoMetadata { datetime }
+        Ok(PhotoMetadata {
+            datetime: DateTime::from_ascii(date_time_str.as_bytes()).unwrap(),
+        })
     }
 }
 
@@ -38,15 +34,25 @@ mod tests {
             .join("IMG_20190804_152120.jpg");
 
         // when
-        let metadata = PhotoMetadata::from_file(&path);
+        let metadata = PhotoMetadata::from_file(&path).unwrap();
 
         // then
-        assert_eq!(metadata.datetime.year, 2019);
-        assert_eq!(metadata.datetime.month, 8);
+        assert_eq!(metadata.datetime.year, 2019); // TODO: Create custom assertion like this:
+        assert_eq!(metadata.datetime.month, 8);  //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
         assert_eq!(metadata.datetime.day, 4);
 
         assert_eq!(metadata.datetime.hour, 15);
         assert_eq!(metadata.datetime.minute, 21);
         assert_eq!(metadata.datetime.second, 20);
+    }
+
+    #[test]
+    fn it_should_read_metadata_from_file_without_exif() {
+        // TODO
+    }
+
+    #[test]
+    fn it_should_fail_on_invalid_file() {
+        // TODO
     }
 }
