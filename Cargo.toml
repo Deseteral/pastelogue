@@ -1,8 +1,27 @@
 [package]
 name = "pastelogue"
 version = "0.1.0"
+description = "Automatically catalogue your photo collection"
 authors = ["Deseteral <deseteral@gmail.com>"]
+license = "MIT"
+homepage = "https://github.com/Deseteral/pastelogue"
+repository = "https://github.com/Deseteral/pastelogue"
+
 edition = "2018"
+
+exclude = [
+    ".github",
+    "release",
+    "resources"
+]
+
+[lib]
+name = "pastelogue"
+path = "src/lib.rs"
+
+[[bin]]
+name = "pastelogue"
+path = "src/main.rs"
 
 [dependencies]
 kamadak-exif = "0.3"
