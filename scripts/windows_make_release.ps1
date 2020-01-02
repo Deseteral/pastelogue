@@ -5,6 +5,7 @@ $RELEASE_PATH = ".\release\${RELEASE_NAME}"
 New-Item -Path "." -Name $RELEASE_PATH -ItemType "directory" -Force
 
 Copy-Item ".\target\release\pastelogue.exe" -Destination $RELEASE_PATH
+Copy-Item ".\target\release\pastelogue_server.exe" -Destination $RELEASE_PATH
 Copy-Item ".\release\exiv2\*" -Destination $RELEASE_PATH
 
 Compress-Archive -Path "$RELEASE_PATH\*" -DestinationPath "${RELEASE_PATH}.zip" -Force

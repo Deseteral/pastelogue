@@ -7,6 +7,7 @@ RELEASE_PATH="release/${RELEASE_NAME}"
 mkdir -p $RELEASE_PATH
 
 cp ./target/release/pastelogue $RELEASE_PATH
+cp ./target/release/pastelogue_server $RELEASE_PATH
 cp ./release/exiv2/* $RELEASE_PATH
 
 cd release
