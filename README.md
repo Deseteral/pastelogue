@@ -25,7 +25,7 @@ Packages with binaries built for specific platform are in `release` directory.
 
 ## Server
 ### Processing
-Input:
+Request:
 ```json
 {
   "action": "START_PROCESSING",
@@ -35,27 +35,27 @@ Input:
 }
 ```
 
-Output:
+Response:
 ```json
 {
-  "type": "PROCESSING_STARTED",
+  "id": "PROCESSING_STARTED",
   "payload": null
 }
 {
-  "type": "PROCESSING_PROGRESS",
+  "id": "PROCESSING_PROGRESS",
   "payload": {
     "progress": 12,
     "total": 674
   }
 }
 {
-  "type": "PROCESSING_FINISHED",
+  "id": "PROCESSING_FINISHED",
   "payload": null
 }
 ```
 
 ### Read EXIF data from single image
-Input:
+Request:
 ```json
 {
   "action": "READ_EXIF_DATA",
@@ -65,13 +65,27 @@ Input:
 }
 ```
 
-Output:
+Response:
 ```json
 {
-  "type": "EXIF_DATA",
+  "id": "EXIF_DATA",
   "payload": {
     "exif_data": { ... }
   }
+}
+```
+
+### Error
+Response:
+```json
+{
+    "id": "ERROR",
+    "payload": {
+        "messages": [
+            "Some error message",
+            "Other error message"
+        ]
+    }
 }
 ```
 
