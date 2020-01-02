@@ -1,5 +1,6 @@
+use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
-use serde_json::{Result, Value};
+use serde_json::{Value};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "action")]
@@ -29,5 +30,20 @@ enum Response {
 
 pub fn process_from_json_string(input: &str) {
     let req: Request = serde_json::from_str(input).unwrap();
-    dbg!(&req);
+
+    match req {
+        Request::StartProcessing { path } => {
+            send_response(Response::ProcessingStarted);
+            pastelogue::process_dir(&PathBuf::from(&path));
+            send_response(Response::ProcessingFinished);
+        },
+        Request::ReadExifData { .. } => {
+            todo!("Action READ_EXIF_DATA is not implemented");
+        }
+    }
+}
+
+fn send_response(res: Response) {
+    let json = serde_json::to_string(&res).unwrap();
+    println!("{}", &json);
 }

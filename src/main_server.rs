@@ -10,7 +10,7 @@ fn main() {
             Ok(line) => {
                 api::process_from_json_string(&line);
             },
-            Err(err) => {
+            Err(_err) => {
                 break // TODO: Add proper error handling
             }
         }
