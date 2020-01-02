@@ -23,5 +23,57 @@ or if you're on Windows
 
 Packages with binaries built for specific platform are in `release` directory.
 
+## Server
+### Processing
+Input:
+```json
+{
+  "action": "START_PROCESSING",
+  "args": {
+    "path": "/Some/user/path/to/photos/directory"
+  }
+}
+```
+
+Output:
+```json
+{
+  "type": "PROCESSING_STARTED",
+  "payload": null
+}
+{
+  "type": "PROCESSING_PROGRESS",
+  "payload": {
+    "progress": 12,
+    "total": 674
+  }
+}
+{
+  "type": "PROCESSING_FINISHED",
+  "payload": null
+}
+```
+
+### Read EXIF data from single image
+Input:
+```json
+{
+  "action": "READ_EXIF_DATA",
+  "args": {
+    "path": "/Some/user/path/to/single_photo.jpeg"
+  }
+}
+```
+
+Output:
+```json
+{
+  "type": "EXIF_DATA",
+  "payload": {
+    "exif_data": { ... }
+  }
+}
+```
+
 ## License
 This project is licensed under the [MIT license](LICENSE).
