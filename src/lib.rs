@@ -6,4 +6,5 @@ mod processing;
 mod scan_dir;
 mod exiv2;
 
-pub use processing::process_dir as process_dir;
+pub use processing::CatalogueProcessor as CatalogueProcessor;
+pub use processing::ProcessingInfo as ProcessingInfo;

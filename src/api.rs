@@ -42,6 +42,7 @@ struct ReadExifDataArgs {
 struct ProcessingProgressPayload {
     progress: u32,
     total: u32,
+    path: PathBuf,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -55,7 +56,19 @@ pub fn process_from_json_string(input: &str) {
     match req {
         Request::StartProcessing { args } => {
             send_response(Response::ProcessingStarted);
-            pastelogue::process_dir(&PathBuf::from(&args.path));
+
+            let path = PathBuf::from(&args.path);
+            let catalogue_processor = pastelogue::CatalogueProcessor::new(&path);
+
+            for processing_info in catalogue_processor {
+                let payload = ProcessingProgressPayload {
+                    progress: processing_info.current,
+                    total: processing_info.total,
+                    path: processing_info.path,
+                };
+                send_response(Response::ProcessingProgress { payload });
+            }
+
             send_response(Response::ProcessingFinished);
         },
         Request::ReadExifData { .. } => {

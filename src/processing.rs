@@ -2,30 +2,73 @@ use crate::check_file::{check_file, CheckStatus};
 use crate::extract_metadata::PhotoMetadata;
 use crate::fs_operations::{create_dirs, move_file};
 use crate::scan_dir::scan_dir;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
-pub fn process_dir(root_path: &Path) {
-    let files = scan_dir(&root_path);
-    println!("Scanning completed with {} files to process", files.len());
+pub struct CatalogueProcessor {
+    root_path: PathBuf,
+    files: Vec<PathBuf>,
+    current: usize,
+    next: usize,
+}
 
-    for file_path in files {
-        process_file(&file_path, &root_path);
+#[derive(Debug)]
+pub struct ProcessingInfo {
+    pub current: u32,
+    pub total: u32,
+    pub path: PathBuf,
+}
+
+impl CatalogueProcessor {
+    pub fn new(root_path: &Path) -> CatalogueProcessor {
+        let files = scan_dir(&root_path);
+        CatalogueProcessor {
+            root_path: root_path.to_owned(),
+            files,
+            current: 0,
+            next: 1,
+        }
+    }
+
+    fn process_current_file(&self) -> ProcessingInfo {
+        let current_path = &self.files[self.current];
+
+        let info = ProcessingInfo {
+            current: self.current as u32,
+            total: self.files.len() as u32,
+            path: current_path.to_path_buf(),
+        };
+
+        let metadata = PhotoMetadata::from_file(&current_path);
+        if metadata.is_err() {
+            return info;
+        };
+        let metadata = metadata.unwrap();
+
+        let status = check_file(&current_path, &metadata, &self.root_path);
+
+        if let CheckStatus::Wrong(correct_path) = status {
+            create_dirs(&correct_path);
+            move_file(&current_path.to_path_buf(), &correct_path);
+        }
+
+        info
     }
 }
 
-fn process_file(file_path: &Path, root_path: &Path) {
-    let metadata = PhotoMetadata::from_file(&file_path);
-    if metadata.is_err() {
-        return;
-    };
-    let metadata = metadata.unwrap();
+impl Iterator for CatalogueProcessor {
+    type Item = ProcessingInfo;
 
-    let status = check_file(&file_path, &metadata, &root_path);
+    fn next(&mut self) -> Option<ProcessingInfo> {
+        let info = if self.current >= self.files.len() {
+            None
+        } else {
+            let info = self.process_current_file();
+            Some(info)
+        };
 
-    if let CheckStatus::Wrong(correct_path) = status {
-        create_dirs(&correct_path);
-        move_file(&file_path.to_path_buf(), &correct_path);
+        self.current = self.next;
+        self.next += 1;
 
-        println!("Correctly processed file: {}", &file_path.display());
+        info
     }
 }
