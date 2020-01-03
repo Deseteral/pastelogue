@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 use serde_json::{Value};
+use pastelogue::{CatalogueProcessor, ProcessingStatus};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "action")]
@@ -26,6 +27,9 @@ enum Response {
 
     #[serde(rename = "EXIF_DATA")]
     ExifData { payload: ExifDataPayload },
+
+    #[serde(rename = "ERROR")]
+    Error { payload: ErrorPayload },
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -50,6 +54,11 @@ struct ExifDataPayload {
     exif_data: Value,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+struct ErrorPayload {
+    messages: Vec<String>,
+}
+
 pub fn process_from_json_string(input: &str) {
     let req: Request = serde_json::from_str(input).unwrap();
 
@@ -58,9 +67,18 @@ pub fn process_from_json_string(input: &str) {
             send_response(Response::ProcessingStarted);
 
             let path = PathBuf::from(&args.path);
-            let catalogue_processor = pastelogue::CatalogueProcessor::new(&path);
+            let catalogue_processor = CatalogueProcessor::new(&path);
 
             for processing_info in catalogue_processor {
+                if processing_info.status == ProcessingStatus::BadMetadata {
+                    let error_message = format!(
+                        "File {} has malformed or missing metadata",
+                        processing_info.path.display()
+                    );
+                    let payload = ErrorPayload { messages: vec!(error_message) };
+                    send_response(Response::Error { payload });
+                }
+
                 let payload = ProcessingProgressPayload {
                     progress: processing_info.current,
                     total: processing_info.total,

@@ -8,3 +8,4 @@ mod exiv2;
 
 pub use processing::CatalogueProcessor as CatalogueProcessor;
 pub use processing::ProcessingInfo as ProcessingInfo;
+pub use processing::ProcessingStatus as ProcessingStatus;
