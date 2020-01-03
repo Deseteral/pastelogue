@@ -34,7 +34,7 @@ impl CatalogueProcessor {
 
         let info = ProcessingInfo {
             current: self.current as u32,
-            total: self.files.len() as u32,
+            total: self.len() as u32,
             path: current_path.to_path_buf(),
         };
 
@@ -70,5 +70,11 @@ impl Iterator for CatalogueProcessor {
         self.next += 1;
 
         info
+    }
+}
+
+impl ExactSizeIterator for CatalogueProcessor {
+    fn len(&self) -> usize {
+        self.files.len()
     }
 }
