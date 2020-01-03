@@ -33,7 +33,7 @@ impl CatalogueProcessor {
         let current_path = &self.files[self.current];
 
         let info = ProcessingInfo {
-            current: self.current as u32,
+            current: (self.current + 1) as u32,
             total: self.len() as u32,
             path: current_path.to_path_buf(),
         };
