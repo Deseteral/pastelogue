@@ -1,6 +1,8 @@
 $PKG_VERSION = (Get-Content -Path ".\Cargo.toml" | Select-String -AllMatches -Pattern 'version = "(.*)"').Matches.Groups[1].Value
-$RELEASE_NAME = "pastelogue_${PKG_VERSION}_Windows"
+$RELEASE_NAME = "pastelogue_v${PKG_VERSION}_Windows"
 $RELEASE_PATH = ".\release\${RELEASE_NAME}"
+
+cargo build --release
 
 New-Item -Path "." -Name $RELEASE_PATH -ItemType "directory" -Force
 
