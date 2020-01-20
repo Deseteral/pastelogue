@@ -1,7 +1,36 @@
 # pastelogue
 Automatically catalogue your photo collection.
 
-## Dependencies
+## Cataloging algorithm
+Every media file inside the library directory has to be in correct location with correct name.
+
+### Directory structure scheme
+```
+<library>/<year>/<month>/<day>
+```
+where
+- `year` is in four digit notation (so `1996` not `96`)
+- `month` and `day` are numbers (with leading zero for values from 1 to 9)
+
+### Filename scheme
+```
+<year>-<month>-<day>_<hour>-<minute>-<second><_optional_counter>.<file_extension>
+```
+where
+- `year`, `month`, `day` are the same as in directory name
+- `hour` is number from 00 to 23 (24h format, so 19:00 not 7pm)
+- `hour`, `minute`, `second` are numbers with leading zero for values from 1 to 9
+- `optional_couter` is for cases when there was more then one photo taken in the same second. When that is the case, first photo doesn't have a counter, and second one has `_1` suffix
+
+### Example
+Given two photos that were taken on June 21st 2019 18:13:37 the paths should look like that:
+```
+/2019/06/21/2019-06-21_18-13-37.jpeg
+/2019/06/21/2019-06-21_18-13-37_1.jpeg
+```
+
+## Development
+### Dependencies
 To extract Exif metadata from files pastelogue uses Exiv2 library. To setup this dependency run
 ```shell
 ./scripts/macos_setup_exiv2.sh
@@ -11,7 +40,7 @@ or if you're on Windows
 ./scripts/windows_setup_exiv2.ps1
 ```
 
-## Making release package
+### Making release package
 For MacOS run
 ```shell
 ./scripts/macos_make_release.sh
