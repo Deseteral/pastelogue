@@ -1,22 +1,39 @@
 mod integration {
     use std::{io::Write, process::*};
+    use fs_extra::dir;
 
     #[test]
     fn it_should_process_catalogue_with_correct_output() {
+        // setup
+        setup();
+
         // given
         let mut process = spawn_pastelogue_server();
 
         // when
-        let start_processing_json = r#"{"action": "START_PROCESSING", "args": { "path": "./resources/test" } }"#;
+        let start_processing_json = r#"{"action": "START_PROCESSING", "args": { "path": "./resources/it_test" } }"#;
         write_line_to_process(start_processing_json, &mut process);
 
         // then
         let output_lines = get_process_output_lines(process);
         assert_eq!(output_lines, [
             r#"{"id":"PROCESSING_STARTED"}"#,
-            r#"{"id":"PROCESSING_PROGRESS","payload":{"progress":1,"total":1,"path":"./resources/test/IMG_20190804_152120.jpg"}}"#,
+            r#"{"id":"PROCESSING_PROGRESS","payload":{"progress":1,"total":1,"path":"./resources/it_test/IMG_20190804_152120.jpg"}}"#,
             r#"{"id":"PROCESSING_FINISHED"}"#,
         ]);
+
+        // cleanup
+        cleanup();
+    }
+
+    fn setup() {
+        let mut opts = dir::CopyOptions::new();
+        opts.copy_inside = true;
+        dir::copy("./resources/test", "./resources/it_test", &opts).unwrap();
+    }
+
+    fn cleanup() {
+        dir::remove("resources/it_test").unwrap();
     }
 
     fn spawn_pastelogue_server() -> Child {
