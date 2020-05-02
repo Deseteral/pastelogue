@@ -43,10 +43,12 @@ struct ReadExifDataArgs {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 struct ProcessingProgressPayload {
     progress: u32,
     total: u32,
     path: PathBuf,
+    original_path: PathBuf,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -83,6 +85,7 @@ pub fn process_from_json_string(input: &str) {
                     progress: processing_info.current,
                     total: processing_info.total,
                     path: processing_info.path,
+                    original_path: processing_info.original_path,
                 };
                 send_response(Response::ProcessingProgress { payload });
             }

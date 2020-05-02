@@ -5,6 +5,7 @@ mod integration {
     #[test]
     fn it_should_process_catalogue_with_correct_output() {
         // setup
+        cleanup();
         setup();
 
         // given
@@ -18,7 +19,7 @@ mod integration {
         let output_lines = get_process_output_lines(process);
         assert_eq!(output_lines, [
             r#"{"id":"PROCESSING_STARTED"}"#,
-            r#"{"id":"PROCESSING_PROGRESS","payload":{"progress":1,"total":1,"originalPath":"./resources/it_test/IMG_20190804_152120.jpg","path":"./resources/it_test/2019/08/04/2019-08-04_15-21-20.jpg"}}"#,
+            r#"{"id":"PROCESSING_PROGRESS","payload":{"progress":1,"total":1,"path":"./resources/it_test/2019/08/04/2019-08-04_15-21-20.jpg","originalPath":"./resources/it_test/IMG_20190804_152120.jpg"}}"#,
             r#"{"id":"PROCESSING_FINISHED"}"#,
         ]);
 

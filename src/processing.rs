@@ -14,6 +14,7 @@ pub struct CatalogueProcessor {
 pub struct ProcessingInfo {
     pub current: u32,
     pub total: u32,
+    pub original_path: PathBuf,
     pub path: PathBuf,
     pub status: ProcessingStatus,
 }
@@ -41,7 +42,8 @@ impl CatalogueProcessor {
         let mut info = ProcessingInfo {
             current: (self.current + 1) as u32,
             total: self.len() as u32,
-            path: current_path.to_path_buf(), // TODO: THERE
+            original_path: current_path.to_path_buf(),
+            path: current_path.to_path_buf(),
             status: ProcessingStatus::Ok,
         };
 
@@ -56,6 +58,7 @@ impl CatalogueProcessor {
         if let CheckStatus::Wrong(correct_path) = status {
             create_dirs(&correct_path);
             move_file(&current_path.to_path_buf(), &correct_path);
+            info.path = correct_path;
         }
 
         info
