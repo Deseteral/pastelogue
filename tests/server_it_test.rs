@@ -4,23 +4,27 @@ mod integration {
     #[test]
     fn it_should_process_catalogue_with_correct_output() {
         // given
-        let mut child = Command::new("./target/debug/pastelogue_server")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .spawn()
-            .unwrap();
+        let mut process = spawn_pastelogue_server();
 
         // when
         let start_processing_json = r#"{"action": "START_PROCESSING", "args": { "path": "./resources/test" } }"#;
-        write_line_to_process(start_processing_json, &mut child);
+        write_line_to_process(start_processing_json, &mut process);
 
         // then
-        let output_lines = get_process_output_lines(child);
+        let output_lines = get_process_output_lines(process);
         assert_eq!(output_lines, [
             r#"{"id":"PROCESSING_STARTED"}"#,
             r#"{"id":"PROCESSING_PROGRESS","payload":{"progress":1,"total":1,"path":"./resources/test/IMG_20190804_152120.jpg"}}"#,
             r#"{"id":"PROCESSING_FINISHED"}"#,
         ]);
+    }
+
+    fn spawn_pastelogue_server() -> Child {
+        Command::new("./target/debug/pastelogue_server")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap()
     }
 
     fn write_line_to_process(line: &str, process: &mut Child) {
