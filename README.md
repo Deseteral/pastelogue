@@ -74,7 +74,8 @@ Response:
   "id": "PROCESSING_PROGRESS",
   "payload": {
     "progress": 12,
-    "total": 674
+    "total": 674,
+    "path": "/Some/user/path/to/single_photo.jpeg"
   }
 }
 {
