@@ -75,7 +75,8 @@ Response:
   "payload": {
     "progress": 12,
     "total": 674,
-    "path": "/Some/user/path/to/single_photo.jpeg"
+    "path": "/Some/user/path/to/single_photo_with_correct_path_and_name.jpeg",
+    "originalPath": "/Some/user/path/to/single_photo.jpeg"
   }
 }
 {
