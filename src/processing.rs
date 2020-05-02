@@ -41,7 +41,7 @@ impl CatalogueProcessor {
         let mut info = ProcessingInfo {
             current: (self.current + 1) as u32,
             total: self.len() as u32,
-            path: current_path.to_path_buf(),
+            path: current_path.to_path_buf(), // TODO: THERE
             status: ProcessingStatus::Ok,
         };
 
