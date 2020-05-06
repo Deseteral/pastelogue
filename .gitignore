@@ -1,4 +1,5 @@
 /target
 /release
+/resources/it_test
 **/*.rs.bk
 .DS_Store

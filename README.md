@@ -73,8 +73,18 @@ Response:
 {
   "id": "PROCESSING_PROGRESS",
   "payload": {
-    "progress": 12,
-    "total": 674
+    "progress": {
+      "current": 231,
+      "total": 674
+    },
+    "file": {
+      "input": {
+        "path": "/Some/user/path/to/single_photo.jpeg"
+      },
+      "output": {
+        "path": "/Some/user/path/to/single_photo_with_correct_path_and_name.jpeg"
+      }
+    }
   }
 }
 {

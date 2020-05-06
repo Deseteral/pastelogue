@@ -6,7 +6,8 @@ jobs:
   Build:
     strategy:
       matrix:
-        os: [macOS-latest, windows-latest]
+        # os: [macOS-latest, windows-latest]
+        os: [macOS-latest]
         rust: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
