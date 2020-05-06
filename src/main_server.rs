@@ -4,6 +4,9 @@ mod api;
 
 fn main() {
     let mut rl = Editor::<()>::new();
+
+    api::server_started();
+
     loop {
         let readline = rl.readline("");
         match readline {

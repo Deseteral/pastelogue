@@ -53,6 +53,16 @@ or if you're on Windows
 Packages with binaries built for specific platform are in `release` directory.
 
 ## Server
+When the server starts it will emit the `READY` event:
+```json
+{
+  "id": "READY",
+  "payload": {
+    "version": "0.4.0"
+  }
+}
+```
+
 ### Processing
 Request:
 ```json

@@ -16,6 +16,9 @@ enum Request {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "id")]
 enum Response {
+    #[serde(rename = "READY")]
+    Ready { payload: ReadyPayload },
+
     #[serde(rename = "PROCESSING_STARTED")]
     ProcessingStarted,
 
@@ -40,6 +43,11 @@ struct StartProcessingArgs {
 #[derive(Serialize, Deserialize, Debug)]
 struct ReadExifDataArgs {
     path: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct ReadyPayload {
+    version: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -74,6 +82,13 @@ struct ExifDataPayload {
 #[derive(Serialize, Deserialize, Debug)]
 struct ErrorPayload {
     messages: Vec<String>,
+}
+
+pub fn server_started() {
+    let payload = ReadyPayload {
+        version: env!("CARGO_PKG_VERSION").to_owned(),
+    };
+    send_response(Response::Ready { payload });
 }
 
 pub fn process_from_json_string(input: &str) {

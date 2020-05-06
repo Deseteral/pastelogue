@@ -18,6 +18,7 @@ mod integration {
         // then
         let output_lines = get_process_output_lines(process);
         assert_eq!(output_lines, [
+            r#"{"id":"READY","payload":{"version":"0.4.0"}}"#,
             r#"{"id":"PROCESSING_STARTED"}"#,
             r#"{"id":"PROCESSING_PROGRESS","payload":{"progress":{"current":1,"total":1},"file":{"input":{"path":"./resources/it_test/IMG_20190804_152120.jpg"},"output":{"path":"./resources/it_test/2019/08/04/2019-08-04_15-21-20.jpg"}}}}"#,
             r#"{"id":"PROCESSING_FINISHED"}"#,
