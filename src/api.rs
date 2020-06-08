@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 use serde_json::{Value};
 use pastelogue::{CatalogueProcessor, ProcessingStatus};
+use pastelogue::date_time::{datetime_to_iso_string};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "action")]
@@ -54,6 +55,12 @@ struct ReadyPayload {
 struct ProcessingProgressPayload {
     progress: ProcessingProgress,
     file: FileProcessing,
+    exif: SimpleExifPayload,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+struct SimpleExifPayload {
+    date: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -123,6 +130,10 @@ pub fn process_from_json_string(input: &str) {
                         output: FileInfo {
                             path: processing_info.path,
                         }
+                    },
+                    exif: SimpleExifPayload {
+                        // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way
+                        date: datetime_to_iso_string(&processing_info.exif_data.unwrap().datetime),
                     }
                 };
                 send_response(Response::ProcessingProgress { payload });

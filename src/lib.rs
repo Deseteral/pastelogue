@@ -1,4 +1,4 @@
-mod date_time;
+pub mod date_time;
 mod check_file;
 mod extract_metadata;
 mod fs_operations;

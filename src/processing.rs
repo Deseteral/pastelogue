@@ -3,6 +3,7 @@ use crate::extract_metadata::PhotoMetadata;
 use crate::fs_operations::{create_dirs, move_file};
 use crate::scan_dir::scan_dir;
 use std::path::{Path, PathBuf};
+use crate::date_time::DateTime;
 
 pub struct CatalogueProcessor {
     root_path: PathBuf,
@@ -17,6 +18,11 @@ pub struct ProcessingInfo {
     pub original_path: PathBuf,
     pub path: PathBuf,
     pub status: ProcessingStatus,
+    pub exif_data: Option<SimpleExifData>,
+}
+
+pub struct SimpleExifData {
+    pub datetime: DateTime,
 }
 
 #[derive(PartialEq)]
@@ -45,6 +51,7 @@ impl CatalogueProcessor {
             original_path: current_path.to_path_buf(),
             path: current_path.to_path_buf(),
             status: ProcessingStatus::Ok,
+            exif_data: None,
         };
 
         let metadata = PhotoMetadata::from_file(&current_path);
@@ -60,6 +67,10 @@ impl CatalogueProcessor {
             move_file(&current_path.to_path_buf(), &correct_path);
             info.path = correct_path;
         }
+
+        info.exif_data = Some(SimpleExifData {
+            datetime: metadata.datetime,
+        });
 
         info
     }
