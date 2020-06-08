@@ -95,7 +95,7 @@ Response:
         "path": "/Some/user/path/to/single_photo_with_correct_path_and_name.jpeg"
       }
     },
-    "exif": {
+    "metadata": {
         "date": "2020-06-08T20:02:24"
     }
   }

@@ -55,11 +55,11 @@ struct ReadyPayload {
 struct ProcessingProgressPayload {
     progress: ProcessingProgress,
     file: FileProcessing,
-    exif: SimpleExifPayload,
+    metadata: MetadataPayload,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct SimpleExifPayload {
+struct MetadataPayload {
     date: String,
 }
 
@@ -131,7 +131,7 @@ pub fn process_from_json_string(input: &str) {
                             path: processing_info.path,
                         }
                     },
-                    exif: SimpleExifPayload {
+                    metadata: MetadataPayload {
                         // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way
                         date: datetime_to_iso_string(&processing_info.exif_data.unwrap().datetime),
                     }
