@@ -22,7 +22,7 @@ pub struct ProcessingInfo {
 }
 
 pub struct SimpleExifData {
-    pub datetime: DateTime,
+    pub created_at: DateTime,
 }
 
 #[derive(PartialEq)]
@@ -69,7 +69,7 @@ impl CatalogueProcessor {
         }
 
         info.exif_data = Some(SimpleExifData {
-            datetime: metadata.datetime,
+            created_at: metadata.datetime,
         });
 
         info

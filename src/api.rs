@@ -59,8 +59,9 @@ struct ProcessingProgressPayload {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 struct MetadataPayload {
-    date: String,
+    created_at: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -133,7 +134,7 @@ pub fn process_from_json_string(input: &str) {
                     },
                     metadata: MetadataPayload {
                         // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way
-                        date: datetime_to_iso_string(&processing_info.exif_data.unwrap().datetime),
+                        created_at: datetime_to_iso_string(&processing_info.exif_data.unwrap().created_at),
                     }
                 };
                 send_response(Response::ProcessingProgress { payload });
