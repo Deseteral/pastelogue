@@ -94,6 +94,9 @@ Response:
       "output": {
         "path": "/Some/user/path/to/single_photo_with_correct_path_and_name.jpeg"
       }
+    },
+    "metadata": {
+        "createdAt": "2020-06-08T20:02:24"
     }
   }
 }
