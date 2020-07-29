@@ -10,9 +10,9 @@ pub struct PhotoMetadata {
 impl PhotoMetadata {
     pub fn from_file(file_path: &Path) -> Result<PhotoMetadata, exiv2::ExifReadError> {
         let metadata = exiv2::read_metadata_from_file(file_path)?;
-        let date_time_str = &metadata["Exif"]["Image"]["DateTime"]
-            .as_str()
-            .ok_or_else(|| exiv2::ExifReadError {})?;
+        let date_time_str = &metadata.get("Exif.Photo.DateTimeOriginal")
+            .ok_or_else(|| exiv2::ExifReadError {})?
+            .as_str();
 
         Ok(PhotoMetadata {
             datetime: DateTime::from_ascii(date_time_str.as_bytes()).unwrap(),

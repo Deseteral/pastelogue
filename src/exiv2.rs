@@ -4,23 +4,22 @@ use std::env;
 use std::convert::From;
 use std::error;
 use std::fmt;
-use serde_json;
-use regex::Regex;
+use std::collections::HashMap;
 
-pub fn read_metadata_from_file(file_path: &Path) -> Result<serde_json::Value, ExifReadError> {
-    let exec_path = get_exiv2json_path();
-    let exiv2json_output = Command::new(exec_path)
+pub fn read_metadata_from_file(file_path: &Path) -> Result<HashMap<String, String>, ExifReadError> {
+    let exec_path = get_exiv2_path();
+    let exiv2_output = Command::new(exec_path)
+        .arg("-PEkv")
         .arg(file_path.to_str().unwrap())
         .output()
         .expect("failed to execute exiv2json process");
 
-    let output_str = String::from_utf8(exiv2json_output.stdout)?;
-    let json = remove_control_characters(&output_str);
+    let output_str = String::from_utf8(exiv2_output.stdout)?;
 
-    serde_json::from_str(&json).map_err(|_err| ExifReadError {})
+    Ok(process_exiv2_output(&output_str))
 }
 
-fn get_exiv2json_path() -> PathBuf {
+fn get_exiv2_path() -> PathBuf {
     let base_path = if let Ok(cargo_manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
         PathBuf::from(cargo_manifest_dir).join("release").join("exiv2")
     } else {
@@ -29,12 +28,25 @@ fn get_exiv2json_path() -> PathBuf {
             .canonicalize().unwrap() // TODO: Simplify this
     };
 
-    base_path.join("exiv2json")
+    base_path.join("exiv2")
 }
 
-fn remove_control_characters(output: &str) -> String {
-    let pattern = Regex::new(r"\p{Cc}").unwrap();
-    pattern.replace_all(&output, "").to_string()
+fn process_exiv2_output(output_str: &String) -> HashMap<String, String> {
+    let mut data: HashMap<String, String> = HashMap::new();
+
+    output_str
+        .split('\n')
+        .for_each(|line| {
+            let tokens: Vec<&str> = line.split(' ').collect();
+            let key: String = String::from(tokens[0].trim());
+            let value: String = String::from(tokens[1..tokens.len()].join(" ").trim());
+
+            if !key.is_empty() {
+                data.insert(key, value);
+            }
+        });
+
+    data
 }
 
 
@@ -56,5 +68,24 @@ impl error::Error for ExifReadError {
 impl From<std::string::FromUtf8Error> for ExifReadError {
     fn from(_error: std::string::FromUtf8Error) -> Self {
         ExifReadError {}
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_should_build_exif_data_from_exiv2_output() {
+        // given
+        let exiv2_output = String::from("Exif.Photo.DateTimeOriginal                   2019:08:04 15:21:20\nExif.GPSInfo.GPSLatitude                      52/1 24/1 46123/10000");
+
+        // when
+        let data = process_exiv2_output(&exiv2_output);
+
+        // then
+        assert_eq!(data.get("Exif.GPSInfo.GPSLatitude").unwrap(), "52/1 24/1 46123/10000");
+        assert_eq!(data.get("Exif.Photo.DateTimeOriginal").unwrap(), "2019:08:04 15:21:20");
     }
 }
