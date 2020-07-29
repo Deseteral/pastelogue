@@ -1,5 +1,6 @@
 mod integration {
     use fs_extra::dir;
+    use path_slash::PathExt;
     use serde_json::{json, Value};
     use std::path::Path;
     use std::{io::Write, process::*};
@@ -16,7 +17,7 @@ mod integration {
         // when
         let start_processing_json = json!({
             "action": "START_PROCESSING",
-            "args": { "path": Path::new("./resources/it_test").to_str() }
+            "args": { "path": Path::new("./resources/it_test").to_slash().unwrap() }
         })
         .to_string();
 
@@ -43,10 +44,10 @@ mod integration {
                     },
                     "file": {
                         "input": {
-                            "path": Path::new("./resources/it_test/IMG_20190804_152120.jpg").to_str()
+                            "path": Path::new("./resources/it_test/IMG_20190804_152120.jpg").to_slash().unwrap()
                         },
                         "output": {
-                            "path": Path::new("./resources/it_test/2019/08/04/2019-08-04_15-21-20.jpg").to_str()
+                            "path": Path::new("./resources/it_test/2019/08/04/2019-08-04_15-21-20.jpg").to_slash().unwrap()
                         }
                     },
                     "metadata": {
