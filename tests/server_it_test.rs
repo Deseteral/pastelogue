@@ -1,6 +1,6 @@
 mod integration {
     use fs_extra::dir;
-    use serde_json::json;
+    use serde_json::{json, Value};
     use std::{io::Write, process::*};
 
     #[test]
@@ -22,8 +22,12 @@ mod integration {
         write_line_to_process(&start_processing_json, &mut process);
 
         // then
-        let output_lines: Vec<String> = get_process_output_lines(process);
-        let expected_lines: Vec<String> = vec![
+        let output_lines: Vec<Value> = get_process_output_lines(process)
+            .into_iter()
+            .map(|s| serde_json::from_str(&s).unwrap())
+            .collect();
+
+        let expected_lines: Vec<Value> = vec![
             json!({
                 "id": "READY",
                 "payload": { "version": "0.6.0" }
@@ -50,10 +54,7 @@ mod integration {
                 }
             }),
             json!({ "id": "PROCESSING_FINISHED" }),
-        ]
-        .into_iter()
-        .map(|v| v.to_string())
-        .collect();
+        ];
 
         assert_eq!(output_lines, expected_lines);
 
