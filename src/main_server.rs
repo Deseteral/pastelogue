@@ -12,9 +12,9 @@ fn main() {
         match readline {
             Ok(line) => {
                 api::process_from_json_string(&line);
-            },
+            }
             Err(_err) => {
-                break // TODO: Add proper error handling
+                break; // TODO: Add proper error handling
             }
         }
     }

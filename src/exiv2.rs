@@ -1,10 +1,10 @@
-use std::path::{Path, PathBuf};
-use std::process::Command;
-use std::env;
+use std::collections::HashMap;
 use std::convert::From;
+use std::env;
 use std::error;
 use std::fmt;
-use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
 pub fn read_metadata_from_file(file_path: &Path) -> Result<HashMap<String, String>, ExifReadError> {
     let exec_path = get_exiv2_path();
@@ -21,11 +21,16 @@ pub fn read_metadata_from_file(file_path: &Path) -> Result<HashMap<String, Strin
 
 fn get_exiv2_path() -> PathBuf {
     let base_path = if let Ok(cargo_manifest_dir) = env::var("CARGO_MANIFEST_DIR") {
-        PathBuf::from(cargo_manifest_dir).join("release").join("exiv2")
+        PathBuf::from(cargo_manifest_dir)
+            .join("release")
+            .join("exiv2")
     } else {
-        env::current_exe().unwrap()
-            .parent().unwrap()
-            .canonicalize().unwrap() // TODO: Simplify this
+        env::current_exe()
+            .unwrap()
+            .parent()
+            .unwrap()
+            .canonicalize()
+            .unwrap() // TODO: Simplify this
     };
 
     base_path.join("exiv2")
@@ -34,21 +39,18 @@ fn get_exiv2_path() -> PathBuf {
 fn process_exiv2_output(output_str: &String) -> HashMap<String, String> {
     let mut data: HashMap<String, String> = HashMap::new();
 
-    output_str
-        .split('\n')
-        .for_each(|line| {
-            let tokens: Vec<&str> = line.split(' ').collect();
-            let key: String = String::from(tokens[0].trim());
-            let value: String = String::from(tokens[1..tokens.len()].join(" ").trim());
+    output_str.split('\n').for_each(|line| {
+        let tokens: Vec<&str> = line.split(' ').collect();
+        let key: String = String::from(tokens[0].trim());
+        let value: String = String::from(tokens[1..tokens.len()].join(" ").trim());
 
-            if !key.is_empty() {
-                data.insert(key, value);
-            }
-        });
+        if !key.is_empty() {
+            data.insert(key, value);
+        }
+    });
 
     data
 }
-
 
 #[derive(Debug, Clone)]
 pub struct ExifReadError;
@@ -71,7 +73,6 @@ impl From<std::string::FromUtf8Error> for ExifReadError {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -85,7 +86,13 @@ mod tests {
         let data = process_exiv2_output(&exiv2_output);
 
         // then
-        assert_eq!(data.get("Exif.GPSInfo.GPSLatitude").unwrap(), "52/1 24/1 46123/10000");
-        assert_eq!(data.get("Exif.Photo.DateTimeOriginal").unwrap(), "2019:08:04 15:21:20");
+        assert_eq!(
+            data.get("Exif.GPSInfo.GPSLatitude").unwrap(),
+            "52/1 24/1 46123/10000",
+        );
+        assert_eq!(
+            data.get("Exif.Photo.DateTimeOriginal").unwrap(),
+            "2019:08:04 15:21:20",
+        );
     }
 }
