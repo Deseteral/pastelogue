@@ -31,6 +31,7 @@ pub enum ProcessingStatus {
     BadMetadata,
 }
 
+// TODO: This name is bullshit.
 impl CatalogueProcessor {
     pub fn new(root_path: &Path) -> CatalogueProcessor {
         let files = scan_dir(&root_path);

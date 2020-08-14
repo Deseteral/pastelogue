@@ -11,7 +11,7 @@ impl PhotoMetadata {
     pub fn from_file(file_path: &Path) -> Result<PhotoMetadata, exiv2::ExifReadError> {
         let metadata = exiv2::read_metadata_from_file(file_path)?;
         let date_time_str = &metadata
-            .get("Exif.Photo.DateTimeOriginal")
+            .get("Exif.Photo.DateTimeOriginal") // TODO: First of all this should fallback to DateTime. But! There's also Exif.Image.DateTimeOriginal - which one should be used?
             .ok_or_else(|| exiv2::ExifReadError {})?
             .as_str();
 

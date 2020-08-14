@@ -102,6 +102,7 @@ pub fn server_started() {
 pub fn process_from_json_string(input: &str) {
     let req: Request = serde_json::from_str(input).unwrap();
 
+    // TODO: This should be so simple, yet it is not. Simplify!
     match req {
         Request::StartProcessing { args } => {
             send_response(Response::ProcessingStarted);
@@ -135,7 +136,7 @@ pub fn process_from_json_string(input: &str) {
                         },
                     },
                     metadata: MetadataPayload {
-                        // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way
+                        // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way. Maybe use unions?
                         created_at: datetime_to_iso_string(
                             &processing_info.exif_data.unwrap().created_at,
                         ),

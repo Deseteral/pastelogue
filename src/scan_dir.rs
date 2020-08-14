@@ -23,6 +23,8 @@ fn file_is_photo(entry: &DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map(|s| s.to_lowercase().ends_with(".jpg") || s.to_lowercase().ends_with(".jpeg")) // TODO: Add more file types
+        .map(|s| s.to_lowercase().ends_with(".jpg") || s.to_lowercase().ends_with(".jpeg")) // TODO: Add more file types.
         .unwrap_or(false)
 }
+
+// TODO: Add support for video. For scraping metadata ffprobe from ffmpeg family should be enough for the job.

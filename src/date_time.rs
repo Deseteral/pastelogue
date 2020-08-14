@@ -1,4 +1,4 @@
-pub use exif::DateTime;
+pub use exif::DateTime; // TODO: exif::DateTime is used only to parse date time in 2020:06:30 20:51:10 format. Parsing should be implemented here and the dependecy dropped entirely.
 
 pub fn datetime_to_iso_string(datetime: &DateTime) -> String {
     format!(
