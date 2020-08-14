@@ -1,6 +1,6 @@
 use crate::date_time::DateTime;
-use std::path::Path;
 use crate::exiv2;
+use std::path::Path;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
@@ -10,7 +10,8 @@ pub struct PhotoMetadata {
 impl PhotoMetadata {
     pub fn from_file(file_path: &Path) -> Result<PhotoMetadata, exiv2::ExifReadError> {
         let metadata = exiv2::read_metadata_from_file(file_path)?;
-        let date_time_str = &metadata.get("Exif.Photo.DateTimeOriginal")
+        let date_time_str = &metadata
+            .get("Exif.Photo.DateTimeOriginal")
             .ok_or_else(|| exiv2::ExifReadError {})?
             .as_str();
 
@@ -38,7 +39,7 @@ mod tests {
 
         // then
         assert_eq!(metadata.datetime.year, 2019); // TODO: Create custom assertion like this:
-        assert_eq!(metadata.datetime.month, 8);  //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
+        assert_eq!(metadata.datetime.month, 8); //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
         assert_eq!(metadata.datetime.day, 4);
 
         assert_eq!(metadata.datetime.hour, 15);

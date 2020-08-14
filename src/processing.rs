@@ -1,9 +1,9 @@
 use crate::check_file::{check_file, CheckStatus};
+use crate::date_time::DateTime;
 use crate::extract_metadata::PhotoMetadata;
 use crate::fs_operations::{create_dirs, move_file};
 use crate::scan_dir::scan_dir;
 use std::path::{Path, PathBuf};
-use crate::date_time::DateTime;
 
 pub struct CatalogueProcessor {
     root_path: PathBuf,

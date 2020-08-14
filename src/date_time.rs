@@ -1,4 +1,4 @@
-pub use exif::DateTime as DateTime;
+pub use exif::DateTime;
 
 pub fn datetime_to_iso_string(datetime: &DateTime) -> String {
     format!(
