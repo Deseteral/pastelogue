@@ -1,8 +1,7 @@
 mod integration {
     use fs_extra::dir;
-    use path_slash::PathExt;
     use serde_json::{json, Value};
-    use std::path::Path;
+    use std::path::PathBuf;
     use std::{io::Write, process::*};
 
     #[test]
@@ -13,11 +12,23 @@ mod integration {
 
         // given
         let mut process = spawn_pastelogue_server();
+        let it_test_resources_path: PathBuf = [".", "resources", "it_test"].iter().collect();
+        let img_input_file_path: PathBuf = it_test_resources_path
+            .clone()
+            .join("IMG_20190804_152120")
+            .with_extension("jpg");
+        let expected_img_file_path: PathBuf = it_test_resources_path
+            .clone()
+            .join("2019")
+            .join("08")
+            .join("04")
+            .join("2019-08-04_15-21-20")
+            .with_extension("jpg");
 
         // when
         let start_processing_json = json!({
             "action": "START_PROCESSING",
-            "args": { "path": Path::new("./resources/it_test").to_slash().unwrap() }
+            "args": { "path": it_test_resources_path.to_str() }
         })
         .to_string();
 
@@ -44,10 +55,10 @@ mod integration {
                     },
                     "file": {
                         "input": {
-                            "path": Path::new("./resources/it_test/IMG_20190804_152120.jpg").to_slash().unwrap()
+                            "path": img_input_file_path.to_str()
                         },
                         "output": {
-                            "path": Path::new("./resources/it_test/2019/08/04/2019-08-04_15-21-20.jpg").to_slash().unwrap()
+                            "path": expected_img_file_path.to_str()
                         }
                     },
                     "metadata": {
