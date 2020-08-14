@@ -1,5 +1,7 @@
 mod integration {
     use fs_extra::dir;
+    use serde_json::{json, Value};
+    use std::path::PathBuf;
     use std::{io::Write, process::*};
 
     #[test]
@@ -10,23 +12,64 @@ mod integration {
 
         // given
         let mut process = spawn_pastelogue_server();
+        let it_test_resources_path: PathBuf = [".", "resources", "it_test"].iter().collect();
+        let img_input_file_path: PathBuf = it_test_resources_path
+            .clone()
+            .join("IMG_20190804_152120")
+            .with_extension("jpg");
+        let expected_img_file_path: PathBuf = it_test_resources_path
+            .clone()
+            .join("2019")
+            .join("08")
+            .join("04")
+            .join("2019-08-04_15-21-20")
+            .with_extension("jpg");
 
         // when
-        let start_processing_json =
-            r#"{"action": "START_PROCESSING", "args": { "path": "./resources/it_test" } }"#;
-        write_line_to_process(start_processing_json, &mut process);
+        let start_processing_json = json!({
+            "action": "START_PROCESSING",
+            "args": { "path": it_test_resources_path.to_str() }
+        })
+        .to_string();
+
+        write_line_to_process(&start_processing_json, &mut process);
 
         // then
-        let output_lines = get_process_output_lines(process);
-        assert_eq!(
-            output_lines,
-            [
-                r#"{"id":"READY","payload":{"version":"0.6.0"}}"#,
-                r#"{"id":"PROCESSING_STARTED"}"#,
-                r#"{"id":"PROCESSING_PROGRESS","payload":{"progress":{"current":1,"total":1},"file":{"input":{"path":"./resources/it_test/IMG_20190804_152120.jpg"},"output":{"path":"./resources/it_test/2019/08/04/2019-08-04_15-21-20.jpg"}},"metadata":{"createdAt":"2019-08-04T15:21:20Z"}}}"#,
-                r#"{"id":"PROCESSING_FINISHED"}"#,
-            ]
-        );
+        let output_lines: Vec<Value> = get_process_output_lines(process)
+            .into_iter()
+            .map(|s| serde_json::from_str(&s).unwrap())
+            .collect();
+
+        let expected_lines: Vec<Value> = vec![
+            json!({
+                "id": "READY",
+                "payload": { "version": "0.6.0" }
+            }),
+            json!({ "id": "PROCESSING_STARTED" }),
+            json!({
+                "id": "PROCESSING_PROGRESS",
+                "payload": {
+                    "progress": {
+                        "current": 1,
+                        "total": 1
+                    },
+                    "file": {
+                        "input": {
+                            "path": img_input_file_path.to_str()
+                        },
+                        "output": {
+                            "path": expected_img_file_path.to_str()
+                        }
+                    },
+                    "metadata": {
+                        "createdAt": "2019-08-04T15:21:20Z"
+                    }
+                }
+            }),
+            json!({ "id": "PROCESSING_FINISHED" }),
+        ];
+
+        assert_eq!(output_lines, expected_lines);
 
         // cleanup
         cleanup();
