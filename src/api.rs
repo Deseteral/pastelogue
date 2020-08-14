@@ -1,8 +1,8 @@
-use std::path::PathBuf;
-use serde::{Serialize, Deserialize};
-use serde_json::{Value};
+use pastelogue::date_time::datetime_to_iso_string;
 use pastelogue::{CatalogueProcessor, ProcessingStatus};
-use pastelogue::date_time::{datetime_to_iso_string};
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "action")]
@@ -115,7 +115,9 @@ pub fn process_from_json_string(input: &str) {
                         "File {} has malformed or missing metadata",
                         processing_info.path.display()
                     );
-                    let payload = ErrorPayload { messages: vec!(error_message) };
+                    let payload = ErrorPayload {
+                        messages: vec![error_message],
+                    };
                     send_response(Response::Error { payload });
                 }
 
@@ -130,18 +132,20 @@ pub fn process_from_json_string(input: &str) {
                         },
                         output: FileInfo {
                             path: processing_info.path,
-                        }
+                        },
                     },
                     metadata: MetadataPayload {
                         // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way
-                        created_at: datetime_to_iso_string(&processing_info.exif_data.unwrap().created_at),
-                    }
+                        created_at: datetime_to_iso_string(
+                            &processing_info.exif_data.unwrap().created_at,
+                        ),
+                    },
                 };
                 send_response(Response::ProcessingProgress { payload });
             }
 
             send_response(Response::ProcessingFinished);
-        },
+        }
         Request::ReadExifData { .. } => {
             todo!("Action READ_EXIF_DATA is not implemented");
         }
