@@ -88,11 +88,11 @@ mod tests {
         // then
         assert_eq!(
             data.get("Exif.GPSInfo.GPSLatitude").unwrap(),
-            "52/1 24/1 46123/10000",
+            "52/1 24/1 46123/10000"
         );
         assert_eq!(
             data.get("Exif.Photo.DateTimeOriginal").unwrap(),
-            "2019:08:04 15:21:20",
+            "2019:08:04 15:21:20"
         );
     }
 }

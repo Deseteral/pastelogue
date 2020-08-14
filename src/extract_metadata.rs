@@ -39,7 +39,7 @@ mod tests {
 
         // then
         assert_eq!(metadata.datetime.year, 2019); // TODO: Create custom assertion like this:
-        assert_eq!(metadata.datetime.month, 8); //        `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
+        assert_eq!(metadata.datetime.month, 8); //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
         assert_eq!(metadata.datetime.day, 4);
 
         assert_eq!(metadata.datetime.hour, 15);
