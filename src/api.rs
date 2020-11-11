@@ -1,4 +1,4 @@
-use pastelogue::{CatalogueProcessor, ProcessingStatus};
+use pastelogue::{LibraryProcessor, ProcessingStatus};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
@@ -109,7 +109,7 @@ pub fn process_from_json_string(input: &str) {
             send_response(Response::ProcessingStarted);
 
             let path = PathBuf::from(&args.path);
-            let catalogue_processor = CatalogueProcessor::new(&path);
+            let catalogue_processor = LibraryProcessor::new(&path);
 
             for processing_info in catalogue_processor {
                 if processing_info.status == ProcessingStatus::BadMetadata {

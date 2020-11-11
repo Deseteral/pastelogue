@@ -5,7 +5,7 @@ use crate::processing::fs_operations::{create_dirs, move_file};
 use crate::processing::scan_dir::scan_dir;
 use std::path::{Path, PathBuf};
 
-pub struct CatalogueProcessor {
+pub struct LibraryProcessor {
     root_path: PathBuf,
     files: Vec<PathBuf>,
     current: usize,
@@ -31,11 +31,10 @@ pub enum ProcessingStatus {
     BadMetadata,
 }
 
-// TODO: This name is bullshit.
-impl CatalogueProcessor {
-    pub fn new(root_path: &Path) -> CatalogueProcessor {
+impl LibraryProcessor {
+    pub fn new(root_path: &Path) -> LibraryProcessor {
         let files = scan_dir(&root_path);
-        CatalogueProcessor {
+        LibraryProcessor {
             root_path: root_path.to_owned(),
             files,
             current: 0,
@@ -77,7 +76,7 @@ impl CatalogueProcessor {
     }
 }
 
-impl Iterator for CatalogueProcessor {
+impl Iterator for LibraryProcessor {
     type Item = ProcessingInfo;
 
     fn next(&mut self) -> Option<ProcessingInfo> {
@@ -95,7 +94,7 @@ impl Iterator for CatalogueProcessor {
     }
 }
 
-impl ExactSizeIterator for CatalogueProcessor {
+impl ExactSizeIterator for LibraryProcessor {
     fn len(&self) -> usize {
         self.files.len()
     }
