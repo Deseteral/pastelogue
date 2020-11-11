@@ -1,6 +1,6 @@
 [package]
 name = "pastelogue"
-version = "0.6.1"
+version = "0.6.2"
 description = "Automatically catalogue your photo collection"
 authors = ["Deseteral <deseteral@gmail.com>"]
 license = "MIT"
