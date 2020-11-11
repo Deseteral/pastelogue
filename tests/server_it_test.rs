@@ -43,7 +43,7 @@ mod integration {
         let expected_lines: Vec<Value> = vec![
             json!({
                 "id": "READY",
-                "payload": { "version": "0.6.0" }
+                "payload": { "version": "0.6.1" }
             }),
             json!({ "id": "PROCESSING_STARTED" }),
             json!({

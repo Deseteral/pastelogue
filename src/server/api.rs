@@ -121,6 +121,7 @@ pub fn process_from_json_string(input: &str) {
                         messages: vec![error_message],
                     };
                     send_response(Response::Error { payload });
+                    continue;
                 }
 
                 let payload = ProcessingProgressPayload {
