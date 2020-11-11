@@ -1,10 +1,10 @@
-use crate::date_time::DateTime;
+use crate::date_time::ExifDateTime;
 use crate::exiv2;
 use std::path::Path;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
-    pub datetime: DateTime,
+    pub datetime: ExifDateTime,
 }
 
 impl PhotoMetadata {
@@ -16,7 +16,7 @@ impl PhotoMetadata {
             .as_str();
 
         Ok(PhotoMetadata {
-            datetime: DateTime::from_ascii(date_time_str.as_bytes()).unwrap(),
+            datetime: ExifDateTime::from_exif_string(date_time_str).unwrap(),
         })
     }
 }
@@ -38,13 +38,13 @@ mod tests {
         let metadata = PhotoMetadata::from_file(&path).unwrap();
 
         // then
-        assert_eq!(metadata.datetime.year, 2019); // TODO: Create custom assertion like this:
-        assert_eq!(metadata.datetime.month, 8); //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
-        assert_eq!(metadata.datetime.day, 4);
+        assert_eq!(metadata.datetime.year, "2019"); // TODO: Create custom assertion like this:
+        assert_eq!(metadata.datetime.month, "08"); //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
+        assert_eq!(metadata.datetime.day, "04");
 
-        assert_eq!(metadata.datetime.hour, 15);
-        assert_eq!(metadata.datetime.minute, 21);
-        assert_eq!(metadata.datetime.second, 20);
+        assert_eq!(metadata.datetime.hour, "15");
+        assert_eq!(metadata.datetime.minute, "21");
+        assert_eq!(metadata.datetime.second, "20");
     }
 
     #[test]

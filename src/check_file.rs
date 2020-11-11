@@ -46,13 +46,13 @@ fn generate_desired_directory_path(metadata: &PhotoMetadata) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::date_time::DateTime;
+    use crate::date_time::ExifDateTime;
 
     #[test]
     fn it_should_generate_desired_filename() {
         // given
         let metadata = PhotoMetadata {
-            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+            datetime: ExifDateTime::from_exif_string("2019:08:10 18:17:28").unwrap(),
         };
 
         // when
@@ -66,7 +66,7 @@ mod tests {
     fn it_should_generate_desired_directory_path() {
         // given
         let metadata = PhotoMetadata {
-            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+            datetime: ExifDateTime::from_exif_string("2019:08:10 18:17:28").unwrap(),
         };
 
         // when
@@ -85,7 +85,7 @@ mod tests {
         let file_path = Path::new("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg");
         let root_path = Path::new("/device/user/Photos");
         let metadata = PhotoMetadata {
-            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+            datetime: ExifDateTime::from_exif_string("2019:08:10 18:17:28").unwrap(),
         };
 
         // when
@@ -101,7 +101,7 @@ mod tests {
         let file_path = Path::new("/device/user/Photos/some_folder/myphoto.jpg");
         let root_path = Path::new("/device/user/Photos");
         let metadata = PhotoMetadata {
-            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+            datetime: ExifDateTime::from_exif_string("2019:08:10 18:17:28").unwrap(),
         };
 
         // when
@@ -123,7 +123,7 @@ mod tests {
         let file_path = Path::new("/device/user/Photos/2019/08/10/myphoto.jpg");
         let root_path = Path::new("/device/user/Photos");
         let metadata = PhotoMetadata {
-            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+            datetime: ExifDateTime::from_exif_string("2019:08:10 18:17:28").unwrap(),
         };
 
         // when
@@ -145,7 +145,7 @@ mod tests {
         let file_path = Path::new("/device/user/Photos/some_folder/2019-08-10_18-17-28.jpg");
         let root_path = Path::new("/device/user/Photos");
         let metadata = PhotoMetadata {
-            datetime: DateTime::from_ascii(b"2019:08:10 18:17:28").unwrap(),
+            datetime: ExifDateTime::from_exif_string("2019:08:10 18:17:28").unwrap(),
         };
 
         // when

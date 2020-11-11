@@ -1,5 +1,5 @@
 use crate::check_file::{check_file, CheckStatus};
-use crate::date_time::DateTime;
+use crate::date_time::ExifDateTime;
 use crate::extract_metadata::PhotoMetadata;
 use crate::fs_operations::{create_dirs, move_file};
 use crate::scan_dir::scan_dir;
@@ -22,7 +22,7 @@ pub struct ProcessingInfo {
 }
 
 pub struct SimpleExifData {
-    pub created_at: DateTime,
+    pub created_at: ExifDateTime,
 }
 
 #[derive(PartialEq)]

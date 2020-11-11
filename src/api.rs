@@ -1,4 +1,3 @@
-use pastelogue::date_time::datetime_to_iso_string;
 use pastelogue::{CatalogueProcessor, ProcessingStatus};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -139,9 +138,11 @@ pub fn process_from_json_string(input: &str) {
                     },
                     metadata: MetadataPayload {
                         // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way. Maybe use unions?
-                        created_at: datetime_to_iso_string(
-                            &processing_info.exif_data.unwrap().created_at,
-                        ),
+                        created_at: processing_info
+                            .exif_data
+                            .unwrap()
+                            .created_at
+                            .to_iso_string(),
                     },
                 };
                 send_response(Response::ProcessingProgress { payload });
