@@ -30,7 +30,7 @@ fn get_exiv2_path() -> PathBuf {
             .parent()
             .unwrap()
             .canonicalize()
-            .unwrap() // TODO: Simplify this
+            .unwrap()
     };
 
     base_path.join("exiv2")

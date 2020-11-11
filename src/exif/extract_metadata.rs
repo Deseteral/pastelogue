@@ -1,22 +1,22 @@
-use crate::date_time::DateTime;
-use crate::exiv2;
+use crate::exif::exif_date_time::ExifDateTime;
+use crate::exif::exiv2;
 use std::path::Path;
 
 #[derive(Debug)]
 pub struct PhotoMetadata {
-    pub datetime: DateTime,
+    pub datetime: ExifDateTime,
 }
 
 impl PhotoMetadata {
     pub fn from_file(file_path: &Path) -> Result<PhotoMetadata, exiv2::ExifReadError> {
         let metadata = exiv2::read_metadata_from_file(file_path)?;
         let date_time_str = &metadata
-            .get("Exif.Photo.DateTimeOriginal")
+            .get("Exif.Photo.DateTimeOriginal") // TODO: First of all this should fallback to DateTime. But! There's also Exif.Image.DateTimeOriginal - which one should be used?
             .ok_or_else(|| exiv2::ExifReadError {})?
             .as_str();
 
         Ok(PhotoMetadata {
-            datetime: DateTime::from_ascii(date_time_str.as_bytes()).unwrap(),
+            datetime: ExifDateTime::from_exif_string(date_time_str).unwrap(),
         })
     }
 }
@@ -38,13 +38,13 @@ mod tests {
         let metadata = PhotoMetadata::from_file(&path).unwrap();
 
         // then
-        assert_eq!(metadata.datetime.year, 2019); // TODO: Create custom assertion like this:
-        assert_eq!(metadata.datetime.month, 8); //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
-        assert_eq!(metadata.datetime.day, 4);
+        assert_eq!(metadata.datetime.year, "2019");
+        assert_eq!(metadata.datetime.month, "08");
+        assert_eq!(metadata.datetime.day, "04");
 
-        assert_eq!(metadata.datetime.hour, 15);
-        assert_eq!(metadata.datetime.minute, 21);
-        assert_eq!(metadata.datetime.second, 20);
+        assert_eq!(metadata.datetime.hour, "15");
+        assert_eq!(metadata.datetime.minute, "21");
+        assert_eq!(metadata.datetime.second, "20");
     }
 
     #[test]

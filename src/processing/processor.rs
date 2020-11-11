@@ -1,11 +1,11 @@
-use crate::check_file::{check_file, CheckStatus};
-use crate::date_time::DateTime;
-use crate::extract_metadata::PhotoMetadata;
-use crate::fs_operations::{create_dirs, move_file};
-use crate::scan_dir::scan_dir;
+use crate::exif::exif_date_time::ExifDateTime;
+use crate::exif::extract_metadata::PhotoMetadata;
+use crate::processing::check_file::{check_file, CheckStatus};
+use crate::processing::fs_operations::{create_dirs, move_file};
+use crate::processing::scan_dir::scan_dir;
 use std::path::{Path, PathBuf};
 
-pub struct CatalogueProcessor {
+pub struct LibraryProcessor {
     root_path: PathBuf,
     files: Vec<PathBuf>,
     current: usize,
@@ -22,7 +22,7 @@ pub struct ProcessingInfo {
 }
 
 pub struct SimpleExifData {
-    pub created_at: DateTime,
+    pub created_at: ExifDateTime,
 }
 
 #[derive(PartialEq)]
@@ -31,10 +31,10 @@ pub enum ProcessingStatus {
     BadMetadata,
 }
 
-impl CatalogueProcessor {
-    pub fn new(root_path: &Path) -> CatalogueProcessor {
+impl LibraryProcessor {
+    pub fn new(root_path: &Path) -> LibraryProcessor {
         let files = scan_dir(&root_path);
-        CatalogueProcessor {
+        LibraryProcessor {
             root_path: root_path.to_owned(),
             files,
             current: 0,
@@ -76,7 +76,7 @@ impl CatalogueProcessor {
     }
 }
 
-impl Iterator for CatalogueProcessor {
+impl Iterator for LibraryProcessor {
     type Item = ProcessingInfo;
 
     fn next(&mut self) -> Option<ProcessingInfo> {
@@ -94,7 +94,7 @@ impl Iterator for CatalogueProcessor {
     }
 }
 
-impl ExactSizeIterator for CatalogueProcessor {
+impl ExactSizeIterator for LibraryProcessor {
     fn len(&self) -> usize {
         self.files.len()
     }

@@ -1,7 +1,7 @@
 use std::env;
 use std::path::PathBuf;
 
-use pastelogue::{CatalogueProcessor, ProcessingStatus};
+use pastelogue::{LibraryProcessor, ProcessingStatus};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -9,7 +9,7 @@ fn main() {
 
     println!("Scanning catalogue ({})", root_path.display());
 
-    let catalogue_processor = CatalogueProcessor::new(&root_path);
+    let catalogue_processor = LibraryProcessor::new(&root_path);
     println!(
         "Scanning completed with {} files to process",
         catalogue_processor.len()

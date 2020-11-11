@@ -1,5 +1,4 @@
-use pastelogue::date_time::datetime_to_iso_string;
-use pastelogue::{CatalogueProcessor, ProcessingStatus};
+use pastelogue::{LibraryProcessor, ProcessingStatus};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
@@ -102,12 +101,13 @@ pub fn server_started() {
 pub fn process_from_json_string(input: &str) {
     let req: Request = serde_json::from_str(input).unwrap();
 
+    // TODO: This should be so simple, yet it is not. Simplify!
     match req {
         Request::StartProcessing { args } => {
             send_response(Response::ProcessingStarted);
 
             let path = PathBuf::from(&args.path);
-            let catalogue_processor = CatalogueProcessor::new(&path);
+            let catalogue_processor = LibraryProcessor::new(&path);
 
             for processing_info in catalogue_processor {
                 if processing_info.status == ProcessingStatus::BadMetadata {
@@ -136,10 +136,12 @@ pub fn process_from_json_string(input: &str) {
                         },
                     },
                     metadata: MetadataPayload {
-                        // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way
-                        created_at: datetime_to_iso_string(
-                            &processing_info.exif_data.unwrap().created_at,
-                        ),
+                        // TODO: This unwrap is theoretically safe, but it would be nice to have it checked by borrow checker, or handled in some other way. Maybe use unions?
+                        created_at: processing_info
+                            .exif_data
+                            .unwrap()
+                            .created_at
+                            .to_iso_string(),
                     },
                 };
                 send_response(Response::ProcessingProgress { payload });
