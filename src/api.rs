@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::path::PathBuf;
 
+// TODO: This module's name is stupid. Change `api` to something that makes sense.
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "action")]
 enum Request {

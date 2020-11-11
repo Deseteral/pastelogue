@@ -9,7 +9,7 @@ repository = "https://github.com/Deseteral/pastelogue"
 
 edition = "2018"
 
-exclude = [
+exclude = [ # TODO: This crate should not be published anymore. Clean up, and prevent publishing.
     ".github",
     "release",
     "resources"
@@ -29,7 +29,7 @@ path = "src/main_server.rs"
 
 [dependencies]
 kamadak-exif = "0.3"
-regex = "1"
+regex = "1" # TODO: This is not used, clean up deps
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 walkdir = "2"
