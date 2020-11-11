@@ -1,4 +1,4 @@
-use crate::extract_metadata::PhotoMetadata;
+use crate::exif::extract_metadata::PhotoMetadata;
 use std::path::{Path, PathBuf};
 
 #[derive(PartialEq, Debug)]
@@ -46,7 +46,7 @@ fn generate_desired_directory_path(metadata: &PhotoMetadata) -> PathBuf {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::date_time::ExifDateTime;
+    use crate::exif::exif_date_time::ExifDateTime;
 
     #[test]
     fn it_should_generate_desired_filename() {

@@ -16,7 +16,7 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "pastelogue"
-path = "src/main.rs"
+path = "src/main_cli.rs"
 
 [[bin]]
 name = "pastelogue_server"

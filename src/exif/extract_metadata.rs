@@ -1,5 +1,5 @@
-use crate::date_time::ExifDateTime;
-use crate::exiv2;
+use crate::exif::exif_date_time::ExifDateTime;
+use crate::exif::exiv2;
 use std::path::Path;
 
 #[derive(Debug)]
