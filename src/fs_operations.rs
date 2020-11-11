@@ -26,4 +26,4 @@ pub fn move_file(old_path: &Path, new_path: &Path) {
 
 // TODO: Add automatic failure checking via VirtualFS mechanic
 // TODO: Handle duplicate files (multiple copies of a picture)
-// TODO: Add dry run mode with human readable output
+// TODO: Add dry run mode with human readable output (terminal output along with HTML export?)
