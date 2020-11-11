@@ -38,8 +38,8 @@ mod tests {
         let metadata = PhotoMetadata::from_file(&path).unwrap();
 
         // then
-        assert_eq!(metadata.datetime.year, "2019"); // TODO: Create custom assertion like this:
-        assert_eq!(metadata.datetime.month, "08"); //       `assert_datetime_eq!(metadata.datetime, 2019, 12, 10, 13, 30)`
+        assert_eq!(metadata.datetime.year, "2019");
+        assert_eq!(metadata.datetime.month, "08");
         assert_eq!(metadata.datetime.day, "04");
 
         assert_eq!(metadata.datetime.hour, "15");
