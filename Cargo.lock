@@ -182,7 +182,7 @@ dependencies = [
 
 [[package]]
 name = "pastelogue"
-version = "0.6.0"
+version = "0.6.1"
 dependencies = [
  "fs_extra 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustyline 5.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
