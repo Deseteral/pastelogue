@@ -9,16 +9,16 @@ use std::{
 };
 
 #[derive(Debug)]
-enum TransformOperation {
+pub enum TransformOperation {
     NoEffect,
     Change(PathBuf),
     MetadataReadError,
 }
 
 #[derive(Debug)]
-struct FileOperation {
-    file_path: PathBuf,
-    transform_operation: TransformOperation,
+pub struct FileOperation {
+    pub file_path: PathBuf,
+    pub transform_operation: TransformOperation,
 }
 
 impl FileOperation {
@@ -62,7 +62,11 @@ pub struct ProcessingConfig {
     pub dry_run: bool,
 }
 
-pub fn process_library(library_path: &Path, config: ProcessingConfig) {
+pub struct ProcessingResult {
+    pub file_ops: Vec<FileOperation>,
+}
+
+pub fn process_library(library_path: &Path, config: ProcessingConfig) -> ProcessingResult {
     // Prepare list of all media files in library
     let files = scan_dir(&library_path);
 
@@ -84,7 +88,7 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) {
         }
     }
 
-    dbg!(&file_ops);
+    ProcessingResult { file_ops }
 }
 
 fn get_repeated_paths(file_ops: &Vec<FileOperation>) -> Vec<PathBuf> {

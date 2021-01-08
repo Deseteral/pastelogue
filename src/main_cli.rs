@@ -8,5 +8,7 @@ fn main() {
     let root_path = PathBuf::from(&args[1]);
 
     let config = ProcessingConfig { dry_run: true };
-    process_library(&root_path, config);
+    let processing_result = process_library(&root_path, config);
+
+    dbg!(&processing_result.file_ops);
 }
