@@ -89,8 +89,7 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) {
 
 fn get_repeated_paths(file_ops: &Vec<FileOperation>) -> Vec<PathBuf> {
     let mut predicted_paths_count: HashMap<PathBuf, u32> = HashMap::new();
-    let predicted_paths: Vec<PathBuf> =
-        file_ops.iter().map(|fd| fd.predicted_file_path()).collect();
+    let predicted_paths = file_ops.iter().map(|fd| fd.predicted_file_path());
 
     for predicted_file_path in predicted_paths {
         let count = match predicted_paths_count.get(&predicted_file_path) {
