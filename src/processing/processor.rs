@@ -17,7 +17,7 @@ pub enum TransformOperation {
 
 #[derive(Debug)]
 pub struct FileOperation {
-    pub file_path: PathBuf,
+    pub original_file_path: PathBuf,
     pub transform_operation: TransformOperation,
 }
 
@@ -37,7 +37,7 @@ impl FileOperation {
         };
 
         FileOperation {
-            file_path: file_path.to_owned(),
+            original_file_path: file_path.to_owned(),
             transform_operation,
         }
     }
@@ -45,14 +45,14 @@ impl FileOperation {
     fn predicted_file_path(&self) -> PathBuf {
         match &self.transform_operation {
             TransformOperation::Change(next_path) => next_path.clone(),
-            _ => self.file_path.clone(),
+            _ => self.original_file_path.clone(),
         }
     }
 
     fn execute_operation(&self) {
         if let TransformOperation::Change(correct_path) = &self.transform_operation {
             create_dirs(correct_path);
-            move_file(&self.file_path, correct_path);
+            move_file(&self.original_file_path, correct_path);
         }
     }
 }
