@@ -1,3 +1,4 @@
+use super::fs_operations::{create_dirs, move_file};
 use crate::exif::extract_metadata::PhotoMetadata;
 use crate::processing::check_file::{check_file, CheckStatus};
 use crate::processing::scan_dir::scan_dir;
@@ -6,8 +7,6 @@ use std::{
     ffi::OsString,
     path::{Path, PathBuf},
 };
-
-use super::fs_operations::{create_dirs, move_file};
 
 #[derive(Debug)]
 enum TransformOperation {
@@ -24,7 +23,6 @@ struct FileDestiny {
 
 impl FileDestiny {
     fn predicted_file_path(&self) -> PathBuf {
-        // TODO: Do not clone, return borrows
         match &self.transform_operation {
             TransformOperation::Change(next_path) => next_path.clone(),
             _ => self.file_path.clone(),
@@ -84,6 +82,7 @@ fn get_repeated_paths(file_ops: &Vec<FileDestiny>) -> Vec<PathBuf> {
     let mut predicted_paths_count: HashMap<PathBuf, u32> = HashMap::new();
     let predicted_paths: Vec<PathBuf> =
         file_ops.iter().map(|fd| fd.predicted_file_path()).collect();
+
     for predicted_file_path in predicted_paths {
         let count = match predicted_paths_count.get(&predicted_file_path) {
             Some(&current_count) => current_count + 1,
@@ -125,8 +124,8 @@ fn resolve_duplicate_files(file_ops: &mut Vec<FileDestiny>) {
 
 fn add_counter_to_filename(file_path: &mut PathBuf, counter: &u32) {
     let counter_oss: OsString = counter.to_string().into();
-    let mut new_filename: OsString = OsString::new();
 
+    let mut new_filename = OsString::new();
     new_filename.push(file_path.file_stem().unwrap());
     new_filename.push("_");
     new_filename.push(counter_oss);
