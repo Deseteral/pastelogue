@@ -1,6 +1,4 @@
 mod exif;
 mod processing;
 
-pub use processing::processor::LibraryProcessor;
-pub use processing::processor::ProcessingInfo;
-pub use processing::processor::ProcessingStatus;
+pub use processing::processor::process_library;

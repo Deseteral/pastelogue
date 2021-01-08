@@ -1,101 +1,137 @@
-use crate::exif::exif_date_time::ExifDateTime;
 use crate::exif::extract_metadata::PhotoMetadata;
 use crate::processing::check_file::{check_file, CheckStatus};
-use crate::processing::fs_operations::{create_dirs, move_file};
 use crate::processing::scan_dir::scan_dir;
-use std::path::{Path, PathBuf};
+use std::{
+    collections::HashMap,
+    ffi::OsString,
+    path::{Path, PathBuf},
+};
 
-pub struct LibraryProcessor {
-    root_path: PathBuf,
-    files: Vec<PathBuf>,
-    current: usize,
-    next: usize,
+use super::fs_operations::{create_dirs, move_file};
+
+#[derive(Debug)]
+enum TransformOperation {
+    NoEffect,
+    Change(PathBuf),
+    MetadataReadError,
 }
 
-pub struct ProcessingInfo {
-    pub current: u32,
-    pub total: u32,
-    pub original_path: PathBuf,
-    pub path: PathBuf,
-    pub status: ProcessingStatus,
-    pub exif_data: Option<SimpleExifData>,
+#[derive(Debug)]
+struct FileDestiny {
+    file_path: PathBuf,
+    transform_operation: TransformOperation,
 }
 
-pub struct SimpleExifData {
-    pub created_at: ExifDateTime,
+impl FileDestiny {
+    fn predicted_file_path(&self) -> PathBuf {
+        // TODO: Do not clone, return borrows
+        match &self.transform_operation {
+            TransformOperation::Change(next_path) => next_path.clone(),
+            _ => self.file_path.clone(),
+        }
+    }
 }
 
-#[derive(PartialEq)]
-pub enum ProcessingStatus {
-    Ok,
-    BadMetadata,
-}
+pub fn process_library(library_path: &Path) {
+    // Prepare list of all media files in library
+    let files = scan_dir(&library_path);
 
-impl LibraryProcessor {
-    pub fn new(root_path: &Path) -> LibraryProcessor {
-        let files = scan_dir(&root_path);
-        LibraryProcessor {
-            root_path: root_path.to_owned(),
-            files,
-            current: 0,
-            next: 1,
+    // Generate first iteration of transform list from media file list
+    // TODO: Could be multithreaded for performance boost
+    let mut file_ops = build_file_ops_from_metadata(files, library_path);
+
+    // Hande media files with exactly the same date that would otherwise be overwritten
+    resolve_duplicate_files(&mut file_ops);
+
+    // Move files on disk
+    for file_destiny in &file_ops {
+        if let TransformOperation::Change(correct_path) = &file_destiny.transform_operation {
+            create_dirs(correct_path);
+            move_file(&file_destiny.file_path, correct_path);
         }
     }
 
-    fn process_current_file(&self) -> ProcessingInfo {
-        let current_path = &self.files[self.current];
+    dbg!(&file_ops);
+}
 
-        let mut info = ProcessingInfo {
-            current: (self.current + 1) as u32,
-            total: self.len() as u32,
-            original_path: current_path.to_path_buf(),
-            path: current_path.to_path_buf(),
-            status: ProcessingStatus::Ok,
-            exif_data: None,
+fn build_file_ops_from_metadata(files: Vec<PathBuf>, library_path: &Path) -> Vec<FileDestiny> {
+    let mut file_ops: Vec<FileDestiny> = Vec::new();
+
+    for file_path in files {
+        let transform_operation = match PhotoMetadata::from_file(&file_path) {
+            Ok(metadata) => {
+                let status = check_file(&file_path, &metadata, &library_path); // TODO: check_file and status are meh names
+                let transform_operation = match status {
+                    CheckStatus::Wrong(correct_path) => TransformOperation::Change(correct_path),
+                    CheckStatus::Correct => TransformOperation::NoEffect,
+                };
+
+                transform_operation
+            }
+            Err(_) => TransformOperation::MetadataReadError,
         };
 
-        let metadata = PhotoMetadata::from_file(&current_path);
-        if metadata.is_err() {
-            info.status = ProcessingStatus::BadMetadata;
-            return info;
-        };
-        let metadata = metadata.unwrap();
-
-        let status = check_file(&current_path, &metadata, &self.root_path);
-        if let CheckStatus::Wrong(correct_path) = status {
-            create_dirs(&correct_path);
-            move_file(&current_path.to_path_buf(), &correct_path);
-            info.path = correct_path;
-        }
-
-        info.exif_data = Some(SimpleExifData {
-            created_at: metadata.datetime,
+        file_ops.push(FileDestiny {
+            file_path,
+            transform_operation,
         });
-
-        info
     }
+
+    file_ops
 }
 
-impl Iterator for LibraryProcessor {
-    type Item = ProcessingInfo;
-
-    fn next(&mut self) -> Option<ProcessingInfo> {
-        let info = if self.current >= self.files.len() {
-            None
-        } else {
-            let info = self.process_current_file();
-            Some(info)
+fn get_repeated_paths(file_ops: &Vec<FileDestiny>) -> Vec<PathBuf> {
+    let mut predicted_paths_count: HashMap<PathBuf, u32> = HashMap::new();
+    let predicted_paths: Vec<PathBuf> =
+        file_ops.iter().map(|fd| fd.predicted_file_path()).collect();
+    for predicted_file_path in predicted_paths {
+        let count = match predicted_paths_count.get(&predicted_file_path) {
+            Some(&current_count) => current_count + 1,
+            _ => 1,
         };
 
-        self.current = self.next;
-        self.next += 1;
+        predicted_paths_count.insert(predicted_file_path, count);
+    }
 
-        info
+    let mut repeated_paths: Vec<PathBuf> = Vec::new();
+    for (file_path, occurence_count) in predicted_paths_count {
+        if occurence_count > 1 {
+            repeated_paths.push(file_path);
+        }
+    }
+
+    repeated_paths
+}
+
+fn resolve_duplicate_files(file_ops: &mut Vec<FileDestiny>) {
+    // TODO: Check file checksums and handle duplicate files
+    //       Media files with exactly the same date that are different (different checksums) should have _1, _2 etc. suffix
+    //       Media files with exactly the same date and checksum should be deduplicated (only one copy of file should remain)
+    for repeated_file in &get_repeated_paths(&file_ops) {
+        let mut occurence_counter: u32 = 1;
+
+        for file_destiny in &mut *file_ops {
+            let predicted_file_path = file_destiny.predicted_file_path();
+            if predicted_file_path == *repeated_file {
+                let mut new_path = predicted_file_path.clone();
+                add_counter_to_filename(&mut new_path, &occurence_counter);
+
+                file_destiny.transform_operation = TransformOperation::Change(new_path);
+                occurence_counter += 1;
+            }
+        }
     }
 }
 
-impl ExactSizeIterator for LibraryProcessor {
-    fn len(&self) -> usize {
-        self.files.len()
-    }
+fn add_counter_to_filename(file_path: &mut PathBuf, counter: &u32) {
+    let counter_oss: OsString = counter.to_string().into();
+    let mut new_filename: OsString = OsString::new();
+
+    new_filename.push(file_path.file_stem().unwrap());
+    new_filename.push("_");
+    new_filename.push(counter_oss);
+    new_filename.push(".");
+    new_filename.push(file_path.extension().unwrap());
+
+    file_path.set_file_name(new_filename);
 }
