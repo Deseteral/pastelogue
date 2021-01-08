@@ -48,6 +48,13 @@ impl FileOperation {
             _ => self.file_path.clone(),
         }
     }
+
+    fn execute_operation(&self) {
+        if let TransformOperation::Change(correct_path) = &self.transform_operation {
+            create_dirs(correct_path);
+            move_file(&self.file_path, correct_path);
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -73,10 +80,7 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) {
     // Move files on disk
     if !config.dry_run {
         for file_operation in &file_ops {
-            if let TransformOperation::Change(correct_path) = &file_operation.transform_operation {
-                create_dirs(correct_path);
-                move_file(&file_operation.file_path, correct_path);
-            }
+            file_operation.execute_operation();
         }
     }
 
