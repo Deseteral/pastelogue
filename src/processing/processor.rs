@@ -72,10 +72,10 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) {
 
     // Move files on disk
     if !config.dry_run {
-        for file_destiny in &file_ops {
-            if let TransformOperation::Change(correct_path) = &file_destiny.transform_operation {
+        for file_operation in &file_ops {
+            if let TransformOperation::Change(correct_path) = &file_operation.transform_operation {
                 create_dirs(correct_path);
-                move_file(&file_destiny.file_path, correct_path);
+                move_file(&file_operation.file_path, correct_path);
             }
         }
     }
@@ -114,13 +114,13 @@ fn handle_duplicate_files(file_ops: &mut Vec<FileOperation>) {
     for repeated_file in &get_repeated_paths(&file_ops) {
         let mut occurence_counter: u32 = 1;
 
-        for file_destiny in &mut *file_ops {
-            let predicted_file_path = file_destiny.predicted_file_path();
+        for file_operation in &mut *file_ops {
+            let predicted_file_path = file_operation.predicted_file_path();
             if predicted_file_path == *repeated_file {
                 let mut new_path = predicted_file_path.clone();
                 add_counter_to_filename(&mut new_path, &occurence_counter);
 
-                file_destiny.transform_operation = TransformOperation::Change(new_path);
+                file_operation.transform_operation = TransformOperation::Change(new_path);
                 occurence_counter += 1;
             }
         }
