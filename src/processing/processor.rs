@@ -139,6 +139,7 @@ fn handle_duplicate_files(file_ops: &mut Vec<FileOperation>) {
 fn add_counter_to_filename(file_path: &mut PathBuf, counter: &u32) {
     let counter_oss: OsString = counter.to_string().into();
 
+    // TODO: Check if there is a way to format OsString and simplify statements below
     let mut new_filename = OsString::new();
     new_filename.push(file_path.file_stem().unwrap());
     new_filename.push("_");
