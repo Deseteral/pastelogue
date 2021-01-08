@@ -119,11 +119,13 @@ fn handle_duplicate_files(file_ops: &mut Vec<FileOperation>) {
 
         for file_operation in &mut *file_ops {
             let predicted_file_path = file_operation.predicted_file_path();
-            if predicted_file_path == *repeated_file {
+            let is_repeated_file = predicted_file_path == *repeated_file;
+
+            if is_repeated_file {
                 let mut new_path = predicted_file_path.clone();
                 add_counter_to_filename(&mut new_path, &occurence_counter);
-
                 file_operation.transform_operation = TransformOperation::Change(new_path);
+
                 occurence_counter += 1;
             }
         }
