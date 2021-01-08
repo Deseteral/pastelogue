@@ -16,46 +16,13 @@ enum TransformOperation {
 }
 
 #[derive(Debug)]
-struct FileDestiny {
+struct FileOperation {
     file_path: PathBuf,
     transform_operation: TransformOperation,
 }
 
-impl FileDestiny {
-    fn predicted_file_path(&self) -> PathBuf {
-        match &self.transform_operation {
-            TransformOperation::Change(next_path) => next_path.clone(),
-            _ => self.file_path.clone(),
-        }
-    }
-}
-
-pub fn process_library(library_path: &Path) {
-    // Prepare list of all media files in library
-    let files = scan_dir(&library_path);
-
-    // Generate first iteration of transform list from media file list
-    // TODO: Could be multithreaded for performance boost
-    let mut file_ops = build_file_ops_from_metadata(files, library_path);
-
-    // Hande media files with exactly the same date that would otherwise be overwritten
-    resolve_duplicate_files(&mut file_ops);
-
-    // Move files on disk
-    for file_destiny in &file_ops {
-        if let TransformOperation::Change(correct_path) = &file_destiny.transform_operation {
-            create_dirs(correct_path);
-            move_file(&file_destiny.file_path, correct_path);
-        }
-    }
-
-    dbg!(&file_ops);
-}
-
-fn build_file_ops_from_metadata(files: Vec<PathBuf>, library_path: &Path) -> Vec<FileDestiny> {
-    let mut file_ops: Vec<FileDestiny> = Vec::new();
-
-    for file_path in files {
+impl FileOperation {
+    fn build_from_metadata(file_path: &Path, library_path: &Path) -> FileOperation {
         let transform_operation = match PhotoMetadata::from_file(&file_path) {
             Ok(metadata) => {
                 let status = check_file(&file_path, &metadata, &library_path); // TODO: check_file and status are meh names
@@ -69,16 +36,54 @@ fn build_file_ops_from_metadata(files: Vec<PathBuf>, library_path: &Path) -> Vec
             Err(_) => TransformOperation::MetadataReadError,
         };
 
-        file_ops.push(FileDestiny {
-            file_path,
+        FileOperation {
+            file_path: file_path.to_owned(),
             transform_operation,
-        });
+        }
     }
 
-    file_ops
+    fn predicted_file_path(&self) -> PathBuf {
+        match &self.transform_operation {
+            TransformOperation::Change(next_path) => next_path.clone(),
+            _ => self.file_path.clone(),
+        }
+    }
 }
 
-fn get_repeated_paths(file_ops: &Vec<FileDestiny>) -> Vec<PathBuf> {
+#[derive(Debug)]
+pub struct ProcessingConfig {
+    pub dry_run: bool,
+}
+
+pub fn process_library(library_path: &Path, config: ProcessingConfig) {
+    // Prepare list of all media files in library
+    let files = scan_dir(&library_path);
+
+    // Generate first iteration of transform list from media file list
+    // TODO: Could be multithreaded for performance boost
+    let mut file_ops: Vec<FileOperation> = Vec::new();
+    for file_path in &files {
+        let file_operation = FileOperation::build_from_metadata(file_path, library_path);
+        file_ops.push(file_operation);
+    }
+
+    // Hande media files with exactly the same date that would otherwise be overwritten
+    handle_duplicate_files(&mut file_ops);
+
+    // Move files on disk
+    if !config.dry_run {
+        for file_destiny in &file_ops {
+            if let TransformOperation::Change(correct_path) = &file_destiny.transform_operation {
+                create_dirs(correct_path);
+                move_file(&file_destiny.file_path, correct_path);
+            }
+        }
+    }
+
+    dbg!(&file_ops);
+}
+
+fn get_repeated_paths(file_ops: &Vec<FileOperation>) -> Vec<PathBuf> {
     let mut predicted_paths_count: HashMap<PathBuf, u32> = HashMap::new();
     let predicted_paths: Vec<PathBuf> =
         file_ops.iter().map(|fd| fd.predicted_file_path()).collect();
@@ -102,7 +107,7 @@ fn get_repeated_paths(file_ops: &Vec<FileDestiny>) -> Vec<PathBuf> {
     repeated_paths
 }
 
-fn resolve_duplicate_files(file_ops: &mut Vec<FileDestiny>) {
+fn handle_duplicate_files(file_ops: &mut Vec<FileOperation>) {
     // TODO: Check file checksums and handle duplicate files
     //       Media files with exactly the same date that are different (different checksums) should have _1, _2 etc. suffix
     //       Media files with exactly the same date and checksum should be deduplicated (only one copy of file should remain)
