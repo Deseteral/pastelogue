@@ -8,6 +8,31 @@ use std::{
     path::{Path, PathBuf},
 };
 
+pub fn process_library(library_path: &Path, config: ProcessingConfig) -> ProcessingResult {
+    // Prepare list of all media files in library
+    let files = scan_dir(&library_path);
+
+    // Generate first iteration of transform list from media file list
+    // TODO: Could be multithreaded for performance boost
+    let mut file_ops: Vec<FileOperation> = Vec::new();
+    for file_path in &files {
+        let file_operation = FileOperation::build_from_metadata(file_path, library_path);
+        file_ops.push(file_operation);
+    }
+
+    // Hande media files with exactly the same date that would otherwise be overwritten
+    handle_duplicate_files(&mut file_ops);
+
+    // Move files on disk
+    if !config.dry_run {
+        for file_operation in &file_ops {
+            file_operation.execute_operation();
+        }
+    }
+
+    ProcessingResult { file_ops }
+}
+
 #[derive(Debug)]
 pub enum TransformOperation {
     NoEffect,
@@ -64,31 +89,6 @@ pub struct ProcessingConfig {
 
 pub struct ProcessingResult {
     pub file_ops: Vec<FileOperation>,
-}
-
-pub fn process_library(library_path: &Path, config: ProcessingConfig) -> ProcessingResult {
-    // Prepare list of all media files in library
-    let files = scan_dir(&library_path);
-
-    // Generate first iteration of transform list from media file list
-    // TODO: Could be multithreaded for performance boost
-    let mut file_ops: Vec<FileOperation> = Vec::new();
-    for file_path in &files {
-        let file_operation = FileOperation::build_from_metadata(file_path, library_path);
-        file_ops.push(file_operation);
-    }
-
-    // Hande media files with exactly the same date that would otherwise be overwritten
-    handle_duplicate_files(&mut file_ops);
-
-    // Move files on disk
-    if !config.dry_run {
-        for file_operation in &file_ops {
-            file_operation.execute_operation();
-        }
-    }
-
-    ProcessingResult { file_ops }
 }
 
 fn get_repeated_paths(file_ops: &Vec<FileOperation>) -> Vec<PathBuf> {
