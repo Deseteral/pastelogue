@@ -13,9 +13,15 @@ pub fn create_dirs(path: &Path) {
 }
 
 pub fn move_file(old_path: &Path, new_path: &Path) {
+    // TODO: Why can't I just move the file? Why needless copy?
     match fs::copy(old_path, new_path) {
         Ok(_) => {}
-        Err(_) => panic!("Could not copy file: {}", &old_path.display()),
+        Err(err) => panic!(
+            "Could not copy file from '{}' to '{}'; {}",
+            &old_path.display(),
+            &new_path.display(),
+            &err,
+        ),
     };
 
     match fs::remove_file(old_path) {
@@ -24,6 +30,4 @@ pub fn move_file(old_path: &Path, new_path: &Path) {
     };
 }
 
-// TODO: Add automatic failure checking via VirtualFS mechanic
-// TODO: Handle duplicate files (multiple copies of a picture)
 // TODO: Add dry run mode with human readable output (terminal output along with HTML export?)
