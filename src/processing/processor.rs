@@ -6,7 +6,10 @@ use std::{
     collections::HashMap,
     ffi::OsString,
     path::{Path, PathBuf},
-    sync::Arc,
+    sync::{
+        mpsc::{self, Receiver, Sender},
+        Arc,
+    },
     thread,
     time::Instant,
 };
@@ -27,37 +30,7 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) -> Process
     let debug_processing_time = Instant::now();
 
     // Generate first iteration of transform list from media file list
-    let mut threads = Vec::new();
-    let library_path = Arc::new(library_path.to_owned());
-
-    // NOTE: Maybe using mutex would be faster?
-    let chunks: Vec<_> = files
-        .chunks(num_cpus::get())
-        .map(|c| c.to_owned())
-        .collect();
-
-    for chunk in chunks {
-        let library_path = Arc::clone(&library_path);
-
-        threads.push(thread::spawn(move || -> Vec<FileOperation> {
-            let mut chunk_file_ops: Vec<FileOperation> = Vec::new();
-
-            for file_path in chunk {
-                chunk_file_ops.push(FileOperation::build_from_metadata(
-                    &file_path,
-                    &library_path,
-                ));
-            }
-
-            chunk_file_ops
-        }));
-    }
-
-    let mut file_ops = Vec::new();
-    for thread in threads {
-        let mut chunk_file_ops = thread.join().unwrap();
-        file_ops.append(&mut chunk_file_ops);
-    }
+    let mut file_ops = file_ops_from_metadata(&files, &library_path);
 
     println!(
         "processing: {} ms",
@@ -90,6 +63,37 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) -> Process
 
 pub struct ProcessingResult {
     pub file_ops: Vec<FileOperation>,
+}
+
+fn file_ops_from_metadata(files: &Vec<PathBuf>, library_path: &Path) -> Vec<FileOperation> {
+    let library_path = Arc::new(library_path.to_owned());
+
+    let mut threads = Vec::new();
+    let (tx, rx): (Sender<FileOperation>, Receiver<FileOperation>) = mpsc::channel();
+
+    let chunks: Vec<_> = files
+        .chunks(num_cpus::get())
+        .map(|c| c.to_owned())
+        .collect();
+
+    for chunk in chunks {
+        let library_path = Arc::clone(&library_path);
+        let tx = tx.clone();
+
+        threads.push(thread::spawn(move || {
+            for file_path in chunk {
+                let file_operation = FileOperation::build_from_metadata(&file_path, &library_path);
+                tx.send(file_operation).unwrap();
+            }
+        }));
+    }
+
+    let mut file_ops = Vec::with_capacity(files.len());
+    for _ in 0..files.len() {
+        file_ops.push(rx.recv().unwrap());
+    }
+
+    file_ops
 }
 
 #[derive(Debug)]
