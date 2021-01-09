@@ -8,6 +8,11 @@ use std::{
     path::{Path, PathBuf},
 };
 
+#[derive(Debug)]
+pub struct ProcessingConfig {
+    pub dry_run: bool,
+}
+
 pub fn process_library(library_path: &Path, config: ProcessingConfig) -> ProcessingResult {
     // Prepare list of all media files in library
     let files = scan_dir(&library_path);
@@ -33,17 +38,21 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) -> Process
     ProcessingResult { file_ops }
 }
 
-#[derive(Debug)]
-pub enum TransformOperation {
-    NoEffect,
-    Change(PathBuf),
-    MetadataReadError,
+pub struct ProcessingResult {
+    pub file_ops: Vec<FileOperation>,
 }
 
 #[derive(Debug)]
 pub struct FileOperation {
     pub original_file_path: PathBuf,
     pub transform_operation: TransformOperation,
+}
+
+#[derive(Debug)]
+pub enum TransformOperation {
+    NoEffect,
+    Change(PathBuf),
+    MetadataReadError,
 }
 
 impl FileOperation {
@@ -80,15 +89,6 @@ impl FileOperation {
             move_file(&self.original_file_path, correct_path);
         }
     }
-}
-
-#[derive(Debug)]
-pub struct ProcessingConfig {
-    pub dry_run: bool,
-}
-
-pub struct ProcessingResult {
-    pub file_ops: Vec<FileOperation>,
 }
 
 fn get_repeated_paths(file_ops: &Vec<FileOperation>) -> Vec<PathBuf> {
