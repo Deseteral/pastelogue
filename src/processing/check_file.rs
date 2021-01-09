@@ -9,7 +9,7 @@ pub enum CheckStatus {
 
 pub fn check_file(file_path: &Path, metadata: &PhotoMetadata, root_path: &Path) -> CheckStatus {
     let relative_path = file_path.strip_prefix(root_path).unwrap();
-    let extenstion = file_path.extension().unwrap().to_str().unwrap();
+    let extenstion = file_path.extension().unwrap().to_str().unwrap(); // TODO: This should not convert to &str, use &OsStr instead
 
     let desired_filename = generate_desired_filename(&metadata, &extenstion);
     let desired_directory_path = generate_desired_directory_path(&metadata);
