@@ -7,8 +7,8 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let root_path = PathBuf::from(&args[1]);
 
-    let config = ProcessingConfig { dry_run: true };
+    let config = ProcessingConfig { dry_run: false };
     let processing_result = process_library(&root_path, config);
 
-    dbg!(&processing_result.file_ops);
+    // dbg!(&processing_result.file_ops);
 }

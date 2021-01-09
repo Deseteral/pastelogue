@@ -6,6 +6,7 @@ use std::{
     collections::HashMap,
     ffi::OsString,
     path::{Path, PathBuf},
+    time::Instant,
 };
 
 #[derive(Debug)]
@@ -14,8 +15,14 @@ pub struct ProcessingConfig {
 }
 
 pub fn process_library(library_path: &Path, config: ProcessingConfig) -> ProcessingResult {
+    let debug_scan_time = Instant::now();
+
     // Prepare list of all media files in library
     let files = scan_dir(&library_path);
+
+    println!("scan: {} ms", debug_scan_time.elapsed().as_millis());
+
+    let debug_processing_time = Instant::now();
 
     // Generate first iteration of transform list from media file list
     // TODO: Could be multithreaded for performance boost
@@ -25,8 +32,22 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) -> Process
         file_ops.push(file_operation);
     }
 
+    println!(
+        "processing: {} ms",
+        debug_processing_time.elapsed().as_millis()
+    );
+
+    let debug_deduplicate_time = Instant::now();
+
     // Hande media files with exactly the same date that would otherwise be overwritten
     handle_duplicate_files(&mut file_ops);
+
+    println!(
+        "duplicate handling: {} ms",
+        debug_deduplicate_time.elapsed().as_millis()
+    );
+
+    let debug_fs_time = Instant::now();
 
     // Move files on disk
     if !config.dry_run {
@@ -34,6 +55,8 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) -> Process
             file_operation.execute_operation();
         }
     }
+
+    println!("fs ops: {} ms", debug_fs_time.elapsed().as_millis());
 
     ProcessingResult { file_ops }
 }
