@@ -6,6 +6,8 @@ use std::{
     collections::HashMap,
     ffi::OsString,
     path::{Path, PathBuf},
+    sync::Arc,
+    thread,
     time::Instant,
 };
 
@@ -25,11 +27,36 @@ pub fn process_library(library_path: &Path, config: ProcessingConfig) -> Process
     let debug_processing_time = Instant::now();
 
     // Generate first iteration of transform list from media file list
-    // TODO: Could be multithreaded for performance boost
-    let mut file_ops: Vec<FileOperation> = Vec::new();
-    for file_path in &files {
-        let file_operation = FileOperation::build_from_metadata(file_path, library_path);
-        file_ops.push(file_operation);
+    let mut threads = Vec::new();
+    let library_path = Arc::new(library_path.to_owned());
+
+    // NOTE: Maybe using mutex would be faster?
+    let chunks: Vec<_> = files
+        .chunks(num_cpus::get())
+        .map(|c| c.to_owned())
+        .collect();
+
+    for chunk in chunks {
+        let library_path = Arc::clone(&library_path);
+
+        threads.push(thread::spawn(move || -> Vec<FileOperation> {
+            let mut chunk_file_ops: Vec<FileOperation> = Vec::new();
+
+            for file_path in chunk {
+                chunk_file_ops.push(FileOperation::build_from_metadata(
+                    &file_path,
+                    &library_path,
+                ));
+            }
+
+            chunk_file_ops
+        }));
+    }
+
+    let mut file_ops = Vec::new();
+    for thread in threads {
+        let mut chunk_file_ops = thread.join().unwrap();
+        file_ops.append(&mut chunk_file_ops);
     }
 
     println!(
