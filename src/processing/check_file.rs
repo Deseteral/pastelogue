@@ -2,12 +2,16 @@ use crate::exif::extract_metadata::PhotoMetadata;
 use std::path::{Path, PathBuf};
 
 #[derive(PartialEq, Debug)]
-pub enum CheckStatus {
+pub enum FilePathCheckStatus {
     Correct,
     Wrong(PathBuf),
 }
 
-pub fn check_file(file_path: &Path, metadata: &PhotoMetadata, root_path: &Path) -> CheckStatus {
+pub fn check_file_path_with_metadata(
+    file_path: &Path,
+    metadata: &PhotoMetadata,
+    root_path: &Path,
+) -> FilePathCheckStatus {
     let relative_path = file_path.strip_prefix(root_path).unwrap();
     let extenstion = file_path.extension().unwrap().to_str().unwrap(); // TODO: This should not convert to &str, use &OsStr instead
 
@@ -16,10 +20,10 @@ pub fn check_file(file_path: &Path, metadata: &PhotoMetadata, root_path: &Path) 
     let relative_desired_path = desired_directory_path.join(desired_filename);
 
     if relative_desired_path == relative_path {
-        CheckStatus::Correct
+        FilePathCheckStatus::Correct
     } else {
         let full_desired_path = root_path.join(relative_desired_path);
-        CheckStatus::Wrong(full_desired_path)
+        FilePathCheckStatus::Wrong(full_desired_path)
     }
 }
 
@@ -89,10 +93,10 @@ mod tests {
         };
 
         // when
-        let status = check_file(&file_path, &metadata, &root_path);
+        let status = check_file_path_with_metadata(&file_path, &metadata, &root_path);
 
         // then
-        assert_eq!(status, CheckStatus::Correct);
+        assert_eq!(status, FilePathCheckStatus::Correct);
     }
 
     #[test]
@@ -105,11 +109,11 @@ mod tests {
         };
 
         // when
-        let status = check_file(&file_path, &metadata, &root_path);
+        let status = check_file_path_with_metadata(&file_path, &metadata, &root_path);
 
         // then
         match status {
-            CheckStatus::Wrong(correct_path) => assert_eq!(
+            FilePathCheckStatus::Wrong(correct_path) => assert_eq!(
                 correct_path,
                 PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg")
             ),
@@ -127,11 +131,11 @@ mod tests {
         };
 
         // when
-        let status = check_file(&file_path, &metadata, &root_path);
+        let status = check_file_path_with_metadata(&file_path, &metadata, &root_path);
 
         // then
         match status {
-            CheckStatus::Wrong(correct_path) => assert_eq!(
+            FilePathCheckStatus::Wrong(correct_path) => assert_eq!(
                 correct_path,
                 PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg")
             ),
@@ -149,11 +153,11 @@ mod tests {
         };
 
         // when
-        let status = check_file(&file_path, &metadata, &root_path);
+        let status = check_file_path_with_metadata(&file_path, &metadata, &root_path);
 
         // then
         match status {
-            CheckStatus::Wrong(correct_path) => assert_eq!(
+            FilePathCheckStatus::Wrong(correct_path) => assert_eq!(
                 correct_path,
                 PathBuf::from("/device/user/Photos/2019/08/10/2019-08-10_18-17-28.jpg")
             ),

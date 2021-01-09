@@ -1,6 +1,6 @@
 use super::fs_operations::{create_dirs, move_file};
 use crate::exif::extract_metadata::PhotoMetadata;
-use crate::processing::check_file::{check_file, CheckStatus};
+use crate::processing::check_file::{check_file_path_with_metadata, FilePathCheckStatus};
 use crate::processing::scan_dir::scan_dir;
 use std::{
     collections::HashMap,
@@ -59,10 +59,12 @@ impl FileOperation {
     fn build_from_metadata(file_path: &Path, library_path: &Path) -> FileOperation {
         let transform_operation = match PhotoMetadata::from_file(&file_path) {
             Ok(metadata) => {
-                let status = check_file(&file_path, &metadata, &library_path); // TODO: check_file and status are meh names
+                let status = check_file_path_with_metadata(&file_path, &metadata, &library_path);
                 let transform_operation = match status {
-                    CheckStatus::Wrong(correct_path) => TransformOperation::Change(correct_path),
-                    CheckStatus::Correct => TransformOperation::NoEffect,
+                    FilePathCheckStatus::Wrong(correct_path) => {
+                        TransformOperation::Change(correct_path)
+                    }
+                    FilePathCheckStatus::Correct => TransformOperation::NoEffect,
                 };
 
                 transform_operation
