@@ -1,4 +1,6 @@
 # pastelogue
+![Build Status](https://github.com/Deseteral/pastelogue/workflows/Build/badge.svg)
+
 Automatically catalogue your photo collection.
 
 ## Cataloging algorithm
