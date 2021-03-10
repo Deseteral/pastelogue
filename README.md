@@ -27,8 +27,8 @@ where
 ### Example
 Given two photos that were taken on June 21st 2019 18:13:37 the paths should look like that:
 ```
-/2019/06/21/2019-06-21_18-13-37.jpeg
 /2019/06/21/2019-06-21_18-13-37_1.jpeg
+/2019/06/21/2019-06-21_18-13-37_2.jpeg
 ```
 
 ## Development
@@ -120,11 +120,13 @@ Request:
 ```
 
 Response:
-```json
+```jsonc
 {
   "id": "EXIF_DATA",
   "payload": {
-    "exif_data": { ... }
+    "exif_data": {
+        // ...
+    }
   }
 }
 ```
